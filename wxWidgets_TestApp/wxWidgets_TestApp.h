@@ -17,6 +17,8 @@
 
 #include "SizeReportCtrl.h"
 
+#include "PlotViewDialog.h"
+#include "PolarPlotViewDialog.h"
 
 class MyApp : public wxApp
 {
@@ -31,6 +33,7 @@ class MyFrame : public wxFrame
 	{
 		ID_CreateTree = wxID_HIGHEST + 1,
 		ID_CreateGrid,
+		ID_CreatePolarPlot,
 		ID_CreateText,
 		ID_CreateHTML,
 		ID_CreateSizeReport,
@@ -83,6 +86,7 @@ private:
 
 	void OnCreateTree(wxCommandEvent& event);
 	void OnCreateGrid(wxCommandEvent& event);
+	void OnCreatePolarPlot(wxCommandEvent& event);
 	void OnCreateHTML(wxCommandEvent& event);
 	void OnCreateText(wxCommandEvent& event);
 	void OnCreateSizeReport(wxCommandEvent& event);
@@ -105,6 +109,9 @@ private:
 	wxAuiManager m_mgr;
 	wxArrayString m_perspectives;
 	wxMenu* m_perspectives_menu;
+
+	PlotViewDialog* m_CartesianPlot;
+	PolarPlotViewDialog* m_PolarPlot;
 
 	//DECLARE_EVENT_TABLE();
 };
