@@ -288,11 +288,6 @@ void wxPlot::DrawPlots(wxGCDC* dc, int borderX, int borderY, int width, int heig
 	wxPen * gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle.GridLineColour, m_PlotStyle.GridLineWidth, m_PlotStyle.GridLineStyle);
 	dc->SetPen(*gridPen);
 
-	//wxBrush * brush;
-	//wxBrush * brush = wxTheBrushList->FindOrCreateBrush( *wxRED, wxSOLID);
-	//dc->SetBrush( * brush );
-	////dc->SetBrush( wxBrush( wxT("orange"), wxSOLID ) );
-
 	double xMin = -180.0;
 	double xMax = 180.0;
 
@@ -307,23 +302,15 @@ void wxPlot::DrawPlots(wxGCDC* dc, int borderX, int borderY, int width, int heig
 
 	int plotsInTotal = m_graphData->m_plotData.size();;
 
-	//for ( std::vector< std::vector<std::pair <int,int>> >::iterator killZoneIter = m_graphData->m_killZones.begin();
-	//																killZoneIter != m_graphData->m_killZones.end();
-	//																++killZoneIter )
 	for (std::vector< Plot >::iterator plotIter = m_graphData->m_plotData.begin();
 		plotIter != m_graphData->m_plotData.end();
 		++plotIter)
 	{
 		std::string plotName = (*plotIter).getName();
 
-		//std::vector< std::pair <int,int>> killZoneCells = *killZoneIter;
 		std::vector< std::pair <double, double> > plotValues = plotIter->GetPlotValues();
 
 		dc->SetBrush(*(*plotIter).brush);
-
-		//for ( std::vector< std::pair <int,int>>::iterator cellsIter = killZoneCells.begin(); 
-		//												  cellsIter != killZoneCells.end();
-		//												  ++cellsIter )
 
 		int xPrevious = borderX;
 		int yPrevious = borderY + height;
@@ -333,35 +320,35 @@ void wxPlot::DrawPlots(wxGCDC* dc, int borderX, int borderY, int width, int heig
 		wxPen *plotPen = wxThePenList->FindOrCreatePen((*plotIter).brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
 		dc->SetPen(*plotPen);
 
-		int i = 0;
+		wxPoint point;
+
+		wxPoint* points = new wxPoint[plotValues.size() + 1];
+
+		int i = 1;
 		for (std::vector< std::pair <double, double> >::iterator plotValuesIter = plotValues.begin();
 			plotValuesIter != plotValues.end();
 			++plotValuesIter)
 		{
-			//std::pair <int,int> cell = *cellsIter;
 			std::pair <double, double> plotValue = *plotValuesIter;
-
-			//int xSize = m_graphData->m_tempX.size();
 
 			double currentX = plotValue.first;
 			double currentY = plotValue.second;
 
-			xEnd = borderX + i * dx;
-			yEnd = borderY + (yMax - currentY) / yScale;		// height - currentY * dy
+			point.x = borderX + (xMax - currentX) / xScale;
+			point.y = borderY + (yMax - currentY) / yScale;
 
-			wxRect borderRect(xPrevious, yPrevious, 6, 6);
-			dc->DrawRectangle(borderRect);
+			points[i] = point;
 
-			dc->DrawLine(xPrevious, yPrevious, xEnd, yEnd);
-
-			xPrevious = xEnd;
-			yPrevious = yEnd;
+			dc->DrawCircle(point, m_PlotStyle.PlotLineWidth * 1.5f);
 
 			i++;
 		}
 
-		wxRect borderRect(xEnd, yEnd, 6, 6);
-		dc->DrawRectangle(borderRect);
+		//points[0] = wxPoint((xMax + xMax) / yScale, points[0].y);
+
+		dc->DrawLines(plotValues.size() + 1, points);
+
+		dc->DrawCircle(points[i], m_PlotStyle.PlotLineWidth * 1.5f);
 	}
 }
 // ----------------------------------------------------------------------------
@@ -398,12 +385,9 @@ void wxPlot::DrawPolarPlots(wxGCDC * dc, int borderX, int borderY, int width, in
 
 		dc->SetBrush(*(*plotIter).brush);
 
-		int xEnd;
-		int yEnd;
-
 		wxPoint point;
 
-		wxPoint* points = new wxPoint[plotValues.size()];
+		wxPoint* points = new wxPoint[plotValues.size() + 1];
 
 		int i = 0;
 		double radius;
@@ -411,7 +395,6 @@ void wxPlot::DrawPolarPlots(wxGCDC * dc, int borderX, int borderY, int width, in
 			plotValuesIter != plotValues.end();
 			++plotValuesIter)
 		{
-			//std::pair <int,int> cell = *cellsIter;
 			std::pair <double, double> plotValue = *plotValuesIter;
 
 			double azimuth = plotValue.first;
@@ -423,8 +406,7 @@ void wxPlot::DrawPolarPlots(wxGCDC * dc, int borderX, int borderY, int width, in
 			point.x = centerPointX + radius * cos(angle);
 			point.y = centerPointY - radius * sin(angle);
 
-			wxRect borderRect(point.x - 3, point.y - 3, 6, 6);
-			dc->DrawRectangle(borderRect);
+			dc->DrawCircle(point, m_PlotStyle.PlotLineWidth * 1.5f);
 
 			points[i] = point;
 			dc->DrawPoint(point);
@@ -432,14 +414,15 @@ void wxPlot::DrawPolarPlots(wxGCDC * dc, int borderX, int borderY, int width, in
 			i++;
 		}
 
-		points[i + 1] = points[0];
+		//the last point should be equal to the first point to complete the loop
+		points[i] = points[0];
 
 		//dc->DrawSpline(plotValues.size(), points);
 
 		wxPen* plotPen = wxThePenList->FindOrCreatePen((*plotIter).brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
 		dc->SetPen(*plotPen);
 
-		dc->DrawLines(plotValues.size(), points);
+		dc->DrawLines(plotValues.size() + 1, points);
 	}
 }
 // ----------------------------------------------------------------------------
