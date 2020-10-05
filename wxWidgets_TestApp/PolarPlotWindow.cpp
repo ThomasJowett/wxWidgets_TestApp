@@ -52,7 +52,7 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	polarGraphData->m_EndXpercent = 6;
 	polarGraphData->m_EndYpercent = 1;
 
-	DrawPanel* drawPolarPanel = new DrawPanel(polarPlotStaticBox, polarGraphData, false, false, wxID_ANY,
+	wxPlot* drawPolarPanel = new wxPlot(polarPlotStaticBox, polarGraphData, false, false, wxID_ANY,
 		wxPoint(18.5, 20), wxSize(550, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	drawPolarPanel->m_bIsPolarPlot = true;
@@ -69,7 +69,7 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	linearGraphData->m_EndXpercent = 0;
 	linearGraphData->m_EndYpercent = 3;
 
-	DrawPanel* drawCartesianPanel = new DrawPanel(linearPlotStaticBox, linearGraphData, false, false, wxID_ANY,
+	wxPlot* drawCartesianPanel = new wxPlot(linearPlotStaticBox, linearGraphData, false, false, wxID_ANY,
 		wxPoint(25, 20), wxSize(1120, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Controls Sizer

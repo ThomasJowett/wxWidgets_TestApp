@@ -36,7 +36,7 @@ PlotViewDialog::PlotViewDialog(wxWindow * parent, wxWindowID id,  const wxString
 
 	graphData->m_Title = "Cartesian Plots: 1 - 10";
 
-	m_drawPanel = new DrawPanel(this, graphData, true, true,
+	m_drawPanel = new wxPlot(this, graphData, true, true,
 								wxID_ANY, wxDefaultPosition, wxSize(800, 600), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	wxButton * okButton = new wxButton(this, wxID_OK, "Ok", wxPoint(10, 10), wxDefaultSize);

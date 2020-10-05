@@ -7,8 +7,8 @@
 CartesianPlotData::CartesianPlotData(void)
 {
 	m_Title = "Plots";
-	m_DefaultLineColor = *wxBLUE;
-	m_DefaultTextColor = *wxRED;
+	m_DefaultLineColor = *wxLIGHT_GREY;
+	m_DefaultTextColor = *wxBLACK;
 
     m_cXStart = -180;
 	m_cXEnd = 180;

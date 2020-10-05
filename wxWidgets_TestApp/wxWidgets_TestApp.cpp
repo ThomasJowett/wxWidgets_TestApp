@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 #include "wxWidgets_TestApp.h"
+#include "PolarPlotWindow.h"
+#include "DrawPanel.h"
 #include <wx/clipbrd.h>
 
 wxIMPLEMENT_APP(MyApp);
@@ -41,6 +43,8 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	view_menu->Append(ID_CreateGrid, _("Create Grid"));
 	view_menu->Append(ID_CreateSizeReport, _("Create Size Reporter"));
 	view_menu->Append(ID_CreatePolarPlot, _("Create Polar Plot"));
+	view_menu->Append(ID_CreateCartesianPlot, _("Create Cartesian Plot"));
+	view_menu->Append(ID_CreatePolarPlotWindow, _("Create Polar Plot Window"));
 	view_menu->AppendSeparator();
 	view_menu->Append(ID_GridContent, _("Use a Grid for the Content Pane"));
 	view_menu->Append(ID_TextContent, _("Use a Text Control for the context pane"));
@@ -205,6 +209,8 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	Bind(wxEVT_MENU, &MyFrame::OnCreateTree, this, ID_CreateTree);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateGrid, this, ID_CreateGrid);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlot, this, ID_CreatePolarPlot);
+	Bind(wxEVT_MENU, &MyFrame::OnCreateCartesianPlot, this, ID_CreateCartesianPlot);
+	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotWindow, this, ID_CreatePolarPlotWindow);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateHTML, this, ID_CreateHTML);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateSizeReport, this, ID_CreateSizeReport);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePerspective, this, ID_CreatePerspective);
@@ -304,6 +310,8 @@ wxTreeCtrl * MyFrame::CreateTreeCtrl()
 
 	return tree;
 }
+
+
 void MyFrame::OnEraseBackground(wxEraseEvent & event)
 {
 	event.Skip();
@@ -328,9 +336,30 @@ void MyFrame::OnCreateGrid(wxCommandEvent & event)
 		FloatingSize(wxSize(300, 200)));
 	m_mgr.Update();
 }
+void MyFrame::OnCreateCartesianPlot(wxCommandEvent& event)
+{
+	m_mgr.AddPane(CreateCartesianPlot(), wxAuiPaneInfo().
+		Name(wxT("CartesianPlot")).Caption(wxT("Polar Plot")).
+		Float().FloatingPosition(GetStartPosition()).
+		FloatingSize(wxSize(500, 500)));
+	m_mgr.Update();
+}
 void MyFrame::OnCreatePolarPlot(wxCommandEvent& event)
 {
-	int dlgResult = m_PolarPlot->ShowModal();
+	m_mgr.AddPane(CreatePolarPlot(), wxAuiPaneInfo().
+		Name(wxT("PolarPlot")).Caption(wxT("Cartesian Plot")).
+		Float().FloatingPosition(GetStartPosition()).
+		FloatingSize(wxSize(500, 500)));
+	m_mgr.Update();
+}
+void MyFrame::OnCreatePolarPlotWindow(wxCommandEvent& event)
+{
+	wxSize minSize = wxSize(1080, 910);
+	auto* window = new PolarPlotWindow(this, wxID_ANY, "Polar Plot Window", wxDefaultPosition, minSize, wxDEFAULT_FRAME_STYLE);
+
+	window->SetMinSize(minSize);
+
+	window->ShowModal();
 }
 void MyFrame::OnCreateHTML(wxCommandEvent & event)
 {
@@ -435,6 +464,22 @@ wxSizeReportCtrl * MyFrame::CreateSizeReportCtrl(int width, int height)
 		wxDefaultPosition,
 		wxSize(width, height), &m_mgr);
 	return ctrl;
+}
+
+wxPlot* MyFrame::CreateCartesianPlot()
+{
+	CartesianPlotData* plotData = new CartesianPlotData();
+	wxPlot* drawPanel = new wxPlot(this, plotData);
+	drawPanel->m_bIsPolarPlot = false;
+	return drawPanel;
+}
+
+wxPlot* MyFrame::CreatePolarPlot()
+{
+	CartesianPlotData* plotData = new CartesianPlotData();
+	wxPlot* drawPanel = new wxPlot(this, plotData);
+	drawPanel->m_bIsPolarPlot = true;
+	return drawPanel;
 }
 
 wxPoint MyFrame::GetStartPosition()

@@ -34,6 +34,8 @@ class MyFrame : public wxFrame
 		ID_CreateTree = wxID_HIGHEST + 1,
 		ID_CreateGrid,
 		ID_CreatePolarPlot,
+		ID_CreateCartesianPlot,
+		ID_CreatePolarPlotWindow,
 		ID_CreateText,
 		ID_CreateHTML,
 		ID_CreateSizeReport,
@@ -76,6 +78,8 @@ private:
 	wxGrid* CreateGrid();
 	wxTreeCtrl* CreateTreeCtrl();
 	wxSizeReportCtrl* CreateSizeReportCtrl(int width = 80, int height = 80);
+	wxPlot* CreatePolarPlot();
+	wxPlot* CreateCartesianPlot();
 	wxPoint GetStartPosition();
 	wxHtmlWindow* CreateHTMLCtrl();
 
@@ -87,6 +91,8 @@ private:
 	void OnCreateTree(wxCommandEvent& event);
 	void OnCreateGrid(wxCommandEvent& event);
 	void OnCreatePolarPlot(wxCommandEvent& event);
+	void OnCreateCartesianPlot(wxCommandEvent& event);
+	void OnCreatePolarPlotWindow(wxCommandEvent& event);
 	void OnCreateHTML(wxCommandEvent& event);
 	void OnCreateText(wxCommandEvent& event);
 	void OnCreateSizeReport(wxCommandEvent& event);

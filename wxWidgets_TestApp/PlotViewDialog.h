@@ -7,7 +7,7 @@
 #define wxTestDialogStyle (wxOK | wxCANCEL | wxCENTRE | wxWS_EX_VALIDATE_RECURSIVELY)		// wxDEFAULT_DIALOG_STYLE
 						// wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX
 
-class DrawPanel;
+class wxPlot;
 
 // ----------------------------------------------------------------------------
 class PlotViewDialog : public wxDialog
@@ -25,7 +25,7 @@ public:
 	void OnOkClick( wxCommandEvent &event );
 
 private:
-	DrawPanel*	m_drawPanel;
+	wxPlot*	m_drawPanel;
 
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE()};

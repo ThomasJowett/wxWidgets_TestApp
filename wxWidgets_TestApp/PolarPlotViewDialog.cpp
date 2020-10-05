@@ -42,7 +42,7 @@ PolarPlotViewDialog::PolarPlotViewDialog(wxWindow * parent, wxWindowID id,  cons
 
 	//GraphDataInit(graphData);
 
-	m_drawPanel = new DrawPanel(this, graphData, true, true, 
+	m_drawPanel = new wxPlot(this, graphData, true, true, 
 								wxID_ANY, wxDefaultPosition, wxSize(800, 600), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	m_drawPanel->m_bIsPolarPlot = true;

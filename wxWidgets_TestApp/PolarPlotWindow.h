@@ -24,7 +24,6 @@
 class PolarPlotWindow : public wxDialog
 {
 public:
-
 	PolarPlotWindow(wxWindow *parent, wxWindowID, const wxString& title, const wxPoint &pos, const wxSize &size, long style);
 	~PolarPlotWindow(void);
 
