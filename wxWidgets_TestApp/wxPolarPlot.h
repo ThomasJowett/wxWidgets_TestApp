@@ -2,11 +2,11 @@
 
 #include "wx/dcgraph.h"
 
-class CartesianPlotData;
+class PolarPlotData;
 //class wxPaintDC;
 
 // ----------------------------------------------------------------------------
-class wxPlot : public wxPanel
+class wxPolarPlot : public wxPanel
 {
 	struct wxPlotStyle
 	{
@@ -24,17 +24,12 @@ class wxPlot : public wxPanel
 	};
 public:
 
-	const double PI = 3.1415926535897931;
-	const double PId2 = PI / 2.0;
-	const double PI2 = PI * 2.0;
-	const double PId2degree = PI / 180.0;
 
-	bool m_bIsPolarPlot;
-
-	wxPlot(wxWindow *parent,
-		CartesianPlotData * graphData,
+	wxPolarPlot(wxWindow* parent,
+		PolarPlotData* graphData,
 		bool useTitle = true,
 		bool useLegend = true,
+		bool isLinear = false,
 		wxWindowID winid = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
@@ -42,7 +37,7 @@ public:
 		const wxString& name = wxPanelNameStr
 	);
 
-	~wxPlot(void);
+	~wxPolarPlot(void);
 
 	void OnPaint(wxPaintEvent &event);
 	void OnEraseBackground(wxEraseEvent& event) {}
@@ -50,22 +45,31 @@ public:
 
 	wxPlotStyle& Style() { return m_PlotStyle; }
 
+	void ShowTitle(bool showTitle) { m_useTitle = showTitle; }
+	void ShowLegend(bool showLegend) { m_useLegend = showLegend; }
+
 private:
 
-	void DrawGridWithCaptions(wxGCDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarGridWithCaptions(wxGCDC* dc, int borderX, int borderY, int width, int height);
+	void DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int width, int height);
 
-	void DrawPlots(wxGCDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarPlots(wxGCDC* dc, int borderX, int borderY, int width, int height);
+	void DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, int height);
 
-	void DrawGridLegend(wxGCDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarGridLegend(wxGCDC* dc, int borderX, int borderY, int width, int height);
+	void DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int width, int height);
 
-	CartesianPlotData	  * m_graphData;
+	void DrawLinearGridLegend(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawPolarGridLegend(wxDC* dc, int borderX, int borderY, int width, int height);
+
+	PolarPlotData	  * m_graphData;
+	bool				m_IsLinear;
 	bool					m_useTitle;
 	bool					m_useLegend;
 
 	wxPlotStyle m_PlotStyle;
+
+	int m_VerticalGridLines = 12;
+	int m_HorizontalGridLines = 10;
 };
 // ----------------------------------------------------------------------------
 
@@ -74,7 +78,7 @@ class DrawLegend : public wxPanel
 public:
 
 	DrawLegend(wxWindow *parent,
-		CartesianPlotData * graphData,
+		PolarPlotData * graphData,
 		wxWindowID winid = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
@@ -87,7 +91,7 @@ public:
 
 private:
 
-	CartesianPlotData	  * m_graphData;
+	PolarPlotData	  * m_graphData;
 
 	DECLARE_EVENT_TABLE()
 };

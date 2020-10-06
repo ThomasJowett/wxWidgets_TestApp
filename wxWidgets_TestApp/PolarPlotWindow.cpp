@@ -11,8 +11,8 @@
 #endif
 
 #include "PolarPlotWindow.h"
-#include "DrawPanel.h"
-#include "CartesianPlotData.h"
+#include "wxPolarPlot.h"
+#include "PolarPlotData.h"
 
 // ----------------------------------------------------------------------------
 // event tables and other macros for wxWidgets
@@ -44,32 +44,30 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	wxStaticBox* polarPlotStaticBox = new wxStaticBox(setupPanel, wxID_ANY, _("Polar Plot"));
 	polarPlotSizer->Add(polarPlotStaticBox, 1, wxGROW | wxALL, 5);
 
-	CartesianPlotData * polarGraphData = new CartesianPlotData();
+	PolarPlotData * polarGraphData = new PolarPlotData("Polar Plots: 1 - 10");
 
-	polarGraphData->m_StartXpercent = 12;
-	polarGraphData->m_StartYpercent = 5;
-	polarGraphData->m_isPortrate = true;
-	polarGraphData->m_EndXpercent = 6;
-	polarGraphData->m_EndYpercent = 1;
+	//polarGraphData->m_StartXpercent = 12;
+	//polarGraphData->m_StartYpercent = 5;
+	//polarGraphData->m_isPortrate = true;
+	//polarGraphData->m_EndXpercent = 6;
+	//polarGraphData->m_EndYpercent = 1;
 
-	wxPlot* drawPolarPanel = new wxPlot(polarPlotStaticBox, polarGraphData, false, false, wxID_ANY,
-		wxPoint(18.5, 20), wxSize(550, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
-
-	drawPolarPanel->m_bIsPolarPlot = true;
+	wxPolarPlot* drawPolarPanel = new wxPolarPlot(polarPlotStaticBox, polarGraphData, false, false, true,
+		wxID_ANY, wxPoint(18.5, 20), wxSize(550, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Linear Plot
 	wxStaticBox* linearPlotStaticBox = new wxStaticBox(setupPanel, wxID_ANY, _("Linear Plot"));
 	polarPlotSizer->Add(linearPlotStaticBox, 2, wxGROW | wxALL, 5);
 
-	CartesianPlotData * linearGraphData = new CartesianPlotData();
+	PolarPlotData * linearGraphData = new PolarPlotData("Linear Plots: 1 - 10");
 
-	linearGraphData->m_StartXpercent = 5;
-	linearGraphData->m_StartYpercent = 3;
-	linearGraphData->m_isPortrate = true;
-	linearGraphData->m_EndXpercent = 0;
-	linearGraphData->m_EndYpercent = 3;
+	//linearGraphData->m_StartXpercent = 5;
+	//linearGraphData->m_StartYpercent = 3;
+	//linearGraphData->m_isPortrate = true;
+	//linearGraphData->m_EndXpercent = 0;
+	//linearGraphData->m_EndYpercent = 3;
 
-	wxPlot* drawCartesianPanel = new wxPlot(linearPlotStaticBox, linearGraphData, false, false, wxID_ANY,
+	wxPolarPlot* drawCartesianPanel = new wxPolarPlot(linearPlotStaticBox, linearGraphData, false, false, true, wxID_ANY,
 		wxPoint(25, 20), wxSize(1120, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Controls Sizer

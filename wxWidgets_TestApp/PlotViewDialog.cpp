@@ -10,9 +10,10 @@
     #include "wx/wx.h"
 #endif
 
-#include "CartesianPlotData.h"
-#include "DrawPanel.h"
+#include "PolarPlotData.h"
+#include "wxPolarPlot.h"
 #include "PlotViewDialog.h"
+#include "PlotGeneratorHelper.h"
 
 // ----------------------------------------------------------------------------
 // event tables and other macros for wxWidgets
@@ -31,12 +32,16 @@ PlotViewDialog::PlotViewDialog(wxWindow * parent, wxWindowID id,  const wxString
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 	wxBoxSizer *buttonSizer = new wxBoxSizer( wxHORIZONTAL );
 
-	CartesianPlotData * graphData = new CartesianPlotData();
+	PolarPlotData * graphData = new PolarPlotData("Linear Plots: 1 - 10");
 	//GraphDataInit(graphData);
 
-	graphData->m_Title = "Cartesian Plots: 1 - 10";
+	PlotGeneratorHelper generator;
+	for (int i = 0; i < 5; ++i)
+	{
+		generator.AddRandomPlotline(graphData, 36);
+	}
 
-	m_drawPanel = new wxPlot(this, graphData, true, true,
+	m_drawPanel = new wxPolarPlot(this, graphData, true, true, false,
 								wxID_ANY, wxDefaultPosition, wxSize(800, 600), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	wxButton * okButton = new wxButton(this, wxID_OK, "Ok", wxPoint(10, 10), wxDefaultSize);

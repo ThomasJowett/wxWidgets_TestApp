@@ -12,25 +12,15 @@
 #endif
 
 // ----------------------------------------------------------------------------
-class Plot
+struct Plot
 {
+	std::string Name;
+	wxBrush * Brush = nullptr;
+	std::vector<std::pair<double, double>> PlotValues;
 
-public:
-
-	Plot(void);
-	Plot(std::string name);
-	~Plot(void);
-
-	void setName(std::string name);
-	std::string getName();
-
-	wxBrush * brush;
-
-	std::vector<std::pair<double, double>> GetPlotValues();
-	void SetPlotValues(std::vector<std::pair<double, double>> plotValues);
-
-private:
-	std::vector<std::pair<double, double>> mPlotValues;
-	std::string mName;
+	std::vector<std::pair<double, double>>::const_iterator begin() const { return PlotValues.begin(); }
+	std::vector<std::pair<double, double>>::const_iterator end() const { return PlotValues.end(); }
+	std::vector<std::pair<double, double>>::const_reverse_iterator rbegin() const { return PlotValues.rbegin(); }
+	std::vector<std::pair<double, double>>::const_reverse_iterator rend() const { return PlotValues.rend(); }
 };
 // ----------------------------------------------------------------------------

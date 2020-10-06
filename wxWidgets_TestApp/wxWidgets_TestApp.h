@@ -34,7 +34,7 @@ class MyFrame : public wxFrame
 		ID_CreateTree = wxID_HIGHEST + 1,
 		ID_CreateGrid,
 		ID_CreatePolarPlot,
-		ID_CreateCartesianPlot,
+		ID_CreateLinearPlot,
 		ID_CreatePolarPlotWindow,
 		ID_CreateText,
 		ID_CreateHTML,
@@ -78,8 +78,8 @@ private:
 	wxGrid* CreateGrid();
 	wxTreeCtrl* CreateTreeCtrl();
 	wxSizeReportCtrl* CreateSizeReportCtrl(int width = 80, int height = 80);
-	wxPlot* CreatePolarPlot();
-	wxPlot* CreateCartesianPlot();
+	wxPolarPlot* CreatePolarPlot();
+	wxPolarPlot* CreateLinearPlot();
 	wxPoint GetStartPosition();
 	wxHtmlWindow* CreateHTMLCtrl();
 
@@ -118,6 +118,8 @@ private:
 
 	PlotViewDialog* m_CartesianPlot;
 	PolarPlotViewDialog* m_PolarPlot;
+
+	PolarPlotData* m_PlotData;
 
 	//DECLARE_EVENT_TABLE();
 };

@@ -42,10 +42,13 @@
     <ClInclude Include="PolarPlotWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CartesianPlotData.h">
+    <ClInclude Include="PlotGeneratorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DrawPanel.h">
+    <ClInclude Include="PolarPlotData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wxPolarPlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,9 +62,6 @@
     <ClCompile Include="SizeReportCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PlotViewDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,10 +71,13 @@
     <ClCompile Include="PolarPlotWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CartesianPlotData.cpp">
+    <ClCompile Include="PlotGeneratorHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DrawPanel.cpp">
+    <ClCompile Include="PolarPlotData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wxPolarPlot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

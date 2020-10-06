@@ -1,13 +1,13 @@
 #pragma once
 
 #include "wx/window.h"
-#include "CartesianPlotData.h"
+#include "PolarPlotData.h"
 
 
 #define wxTestDialogStyle (wxOK | wxCANCEL | wxCENTRE | wxWS_EX_VALIDATE_RECURSIVELY)		// wxDEFAULT_DIALOG_STYLE
 						// wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX
 
-class wxPlot;
+class wxPolarPlot;
 
 // ----------------------------------------------------------------------------
 class PlotViewDialog : public wxDialog
@@ -25,7 +25,7 @@ public:
 	void OnOkClick( wxCommandEvent &event );
 
 private:
-	wxPlot*	m_drawPanel;
+	wxPolarPlot*	m_drawPanel;
 
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE()};

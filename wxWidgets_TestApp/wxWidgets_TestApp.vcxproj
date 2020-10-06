@@ -151,9 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CartesianPlotData.h" />
-    <ClInclude Include="DrawPanel.h" />
+    <ClInclude Include="PolarPlotData.h" />
+    <ClInclude Include="wxPolarPlot.h" />
     <ClInclude Include="Plot.h" />
+    <ClInclude Include="PlotGeneratorHelper.h" />
     <ClInclude Include="PlotViewDialog.h" />
     <ClInclude Include="PolarPlotViewDialog.h" />
     <ClInclude Include="PolarPlotWindow.h" />
@@ -164,9 +165,9 @@
     <ClInclude Include="wxWidgets_TestApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CartesianPlotData.cpp" />
-    <ClCompile Include="DrawPanel.cpp" />
-    <ClCompile Include="Plot.cpp" />
+    <ClCompile Include="PolarPlotData.cpp" />
+    <ClCompile Include="wxPolarPlot.cpp" />
+    <ClCompile Include="PlotGeneratorHelper.cpp" />
     <ClCompile Include="PlotViewDialog.cpp" />
     <ClCompile Include="PolarPlotViewDialog.cpp" />
     <ClCompile Include="PolarPlotWindow.cpp" />

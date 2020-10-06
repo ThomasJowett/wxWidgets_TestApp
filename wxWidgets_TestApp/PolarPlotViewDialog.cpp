@@ -10,8 +10,8 @@
     #include "wx/wx.h"
 #endif
 
-#include "CartesianPlotData.h"
-#include "DrawPanel.h"
+#include "PolarPlotData.h"
+#include "wxPolarPlot.h"
 #include "PolarPlotViewDialog.h"
 
 // ----------------------------------------------------------------------------
@@ -31,21 +31,18 @@ PolarPlotViewDialog::PolarPlotViewDialog(wxWindow * parent, wxWindowID id,  cons
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 	wxBoxSizer *buttonSizer = new wxBoxSizer( wxHORIZONTAL );
 
-	CartesianPlotData * graphData = new CartesianPlotData();
+	PolarPlotData * graphData = new PolarPlotData("Polar Plots: 1 - 10");
 
-	graphData->m_Title = "Polar Plots: 1 - 10";
-	graphData->m_StartXpercent = 2;
-	graphData->m_StartYpercent = 7;
-	graphData->m_isPortrate = true;
-	graphData->m_EndXpercent = 12;
-	graphData->m_EndYpercent = 1;
+	//graphData->m_StartXpercent = 2;
+	//graphData->m_StartYpercent = 7;
+	//graphData->m_isPortrate = true;
+	//graphData->m_EndXpercent = 12;
+	//graphData->m_EndYpercent = 1;
 
 	//GraphDataInit(graphData);
 
-	m_drawPanel = new wxPlot(this, graphData, true, true, 
+	m_drawPanel = new wxPolarPlot(this, graphData, true, true, false,
 								wxID_ANY, wxDefaultPosition, wxSize(800, 600), wxTAB_TRAVERSAL | wxNO_BORDER, title);
-
-	m_drawPanel->m_bIsPolarPlot = true;
 
 	wxButton * okButton = new wxButton(this, wxID_OK, "Ok", wxPoint(10, 10), wxDefaultSize);
 	wxButton * cancelButton = new wxButton(this, wxID_CANCEL, "Cancel", wxPoint(10, 10), wxDefaultSize);
