@@ -20,6 +20,8 @@
 #include "PlotViewDialog.h"
 #include "PolarPlotViewDialog.h"
 
+#include "wxPolarPlot.h"
+
 class MyApp : public wxApp
 {
 public:
@@ -35,6 +37,7 @@ class MyFrame : public wxFrame
 		ID_CreateGrid,
 		ID_CreatePolarPlot,
 		ID_CreateLinearPlot,
+		ID_CreatePolarPlotLegend,
 		ID_CreatePolarPlotWindow,
 		ID_CreateText,
 		ID_CreateHTML,
@@ -80,6 +83,7 @@ private:
 	wxSizeReportCtrl* CreateSizeReportCtrl(int width = 80, int height = 80);
 	wxPolarPlot* CreatePolarPlot();
 	wxPolarPlot* CreateLinearPlot();
+	wxPlotLegend* CreatePolarPlotLegend();
 	wxPoint GetStartPosition();
 	wxHtmlWindow* CreateHTMLCtrl();
 
@@ -91,7 +95,8 @@ private:
 	void OnCreateTree(wxCommandEvent& event);
 	void OnCreateGrid(wxCommandEvent& event);
 	void OnCreatePolarPlot(wxCommandEvent& event);
-	void OnCreateCartesianPlot(wxCommandEvent& event);
+	void OnCreateLinearPlot(wxCommandEvent& event);
+	void OnCreatePolarPlotLegend(wxCommandEvent& event);
 	void OnCreatePolarPlotWindow(wxCommandEvent& event);
 	void OnCreateHTML(wxCommandEvent& event);
 	void OnCreateText(wxCommandEvent& event);
@@ -120,6 +125,4 @@ private:
 	PolarPlotViewDialog* m_PolarPlot;
 
 	PolarPlotData* m_PlotData;
-
-	//DECLARE_EVENT_TABLE();
 };

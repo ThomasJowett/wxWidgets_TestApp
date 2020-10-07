@@ -52,7 +52,7 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	//polarGraphData->m_EndXpercent = 6;
 	//polarGraphData->m_EndYpercent = 1;
 
-	wxPolarPlot* drawPolarPanel = new wxPolarPlot(polarPlotStaticBox, polarGraphData, false, false, true,
+	wxPolarPlot* drawPolarPanel = new wxPolarPlot(polarPlotStaticBox, polarGraphData, false, false, false,
 		wxID_ANY, wxPoint(18.5, 20), wxSize(550, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Linear Plot
@@ -216,7 +216,7 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	wxStaticBoxSizer* legendStaticBoxSizer = new wxStaticBoxSizer(legendStaticBox, wxHORIZONTAL);
 	legendImagesSizer->Add(legendStaticBoxSizer, 0, wxGROW | wxALL, 5);
 
-	DrawLegend* drawLegend = new DrawLegend(legendStaticBox, polarGraphData, wxID_ANY, wxPoint(50,50), wxSize(600,250), wxTAB_TRAVERSAL | wxNO_BORDER, title);
+	wxPlotLegend* drawLegend = new wxPlotLegend(legendStaticBox, polarGraphData, wxID_ANY, wxPoint(50,50), wxSize(600,250), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 	legendStaticBoxSizer->Add(drawLegend, 0, wxALL | wxEXPAND, 10);
 
 	//Image Export

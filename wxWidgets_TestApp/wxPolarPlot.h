@@ -73,11 +73,11 @@ private:
 };
 // ----------------------------------------------------------------------------
 
-class DrawLegend : public wxPanel
+class wxPlotLegend : public wxPanel
 {
 public:
 
-	DrawLegend(wxWindow *parent,
+	wxPlotLegend(wxWindow *parent,
 		PolarPlotData * graphData,
 		wxWindowID winid = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
@@ -85,7 +85,7 @@ public:
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER,
 		const wxString& name = wxPanelNameStr);
 
-	~DrawLegend(void);
+	~wxPlotLegend(void);
 
 	void OnPaint(wxPaintEvent &event);
 

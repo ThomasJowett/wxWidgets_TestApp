@@ -461,6 +461,7 @@ void wxPolarPlot::DrawLinearGridLegend(wxDC* dc, int borderX, int borderY, int w
 		}
 		else
 		{
+			yLegend = borderY + height + legentYShift + legentY2ndShift;
 			dc->DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - legendRectHalfWidth);
 
 			//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
@@ -547,11 +548,11 @@ void wxPolarPlot::DrawPolarGridLegend(wxDC* dc, int borderX, int borderY, int wi
 
 //DRAW LEGEND -----------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(DrawLegend, wxPanel)
-EVT_PAINT(DrawLegend::OnPaint)
+BEGIN_EVENT_TABLE(wxPlotLegend, wxPanel)
+EVT_PAINT(wxPlotLegend::OnPaint)
 END_EVENT_TABLE()
 
-DrawLegend::DrawLegend(wxWindow* parent,
+wxPlotLegend::wxPlotLegend(wxWindow* parent,
 	PolarPlotData* graphData,
 	wxWindowID id,
 	const wxPoint& pos,
@@ -564,11 +565,11 @@ DrawLegend::DrawLegend(wxWindow* parent,
 	SetBackgroundColour(*wxWHITE);
 }
 
-DrawLegend::~DrawLegend(void)
+wxPlotLegend::~wxPlotLegend(void)
 {
 }
 
-void DrawLegend::OnPaint(wxPaintEvent& WXUNUSED(event))
+void wxPlotLegend::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	if (m_graphData->NumberOfPlots() == 0)
 		return;

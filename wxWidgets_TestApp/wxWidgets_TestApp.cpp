@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "wxWidgets_TestApp.h"
 #include "PolarPlotWindow.h"
-#include "wxPolarPlot.h"
 #include "PolarPlotData.h"
 #include "PlotGeneratorHelper.h"
 #include <wx/clipbrd.h>
@@ -53,6 +52,7 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	view_menu->Append(ID_CreateSizeReport, _("Create Size Reporter"));
 	view_menu->Append(ID_CreatePolarPlot, _("Create Polar Plot"));
 	view_menu->Append(ID_CreateLinearPlot, _("Create Linear Plot"));
+	view_menu->Append(ID_CreatePolarPlotLegend, _("Create Polar Plot Legend"));
 	view_menu->Append(ID_CreatePolarPlotWindow, _("Create Polar Plot Window"));
 	view_menu->AppendSeparator();
 	view_menu->Append(ID_GridContent, _("Use a Grid for the Content Pane"));
@@ -218,7 +218,8 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	Bind(wxEVT_MENU, &MyFrame::OnCreateTree, this, ID_CreateTree);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateGrid, this, ID_CreateGrid);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlot, this, ID_CreatePolarPlot);
-	Bind(wxEVT_MENU, &MyFrame::OnCreateCartesianPlot, this, ID_CreateLinearPlot);
+	Bind(wxEVT_MENU, &MyFrame::OnCreateLinearPlot, this, ID_CreateLinearPlot);
+	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotLegend, this, ID_CreatePolarPlotLegend);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotWindow, this, ID_CreatePolarPlotWindow);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateHTML, this, ID_CreateHTML);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateSizeReport, this, ID_CreateSizeReport);
@@ -345,10 +346,18 @@ void MyFrame::OnCreateGrid(wxCommandEvent & event)
 		FloatingSize(wxSize(300, 200)));
 	m_mgr.Update();
 }
-void MyFrame::OnCreateCartesianPlot(wxCommandEvent& event)
+void MyFrame::OnCreateLinearPlot(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateLinearPlot(), wxAuiPaneInfo().
-		Name(wxT("CartesianPlot")).Caption(wxT("Polar Plot")).
+		Name(wxT("LinearPlot")).Caption(wxT("Polar Plot")).
+		Float().FloatingPosition(GetStartPosition()).
+		FloatingSize(wxSize(500, 500)));
+	m_mgr.Update();
+}
+void MyFrame::OnCreatePolarPlotLegend(wxCommandEvent& event)
+{
+	m_mgr.AddPane(CreatePolarPlotLegend(), wxAuiPaneInfo().
+		Name(wxT("PolarPlotLegend")).Caption(wxT("Polar Plot")).
 		Float().FloatingPosition(GetStartPosition()).
 		FloatingSize(wxSize(500, 500)));
 	m_mgr.Update();
@@ -479,6 +488,12 @@ wxPolarPlot* MyFrame::CreateLinearPlot()
 {
 	wxPolarPlot* drawPanel = new wxPolarPlot(this, m_PlotData, true, true, true);
 	return drawPanel;
+}
+
+wxPlotLegend* MyFrame::CreatePolarPlotLegend()
+{
+	wxPlotLegend* drawLegend = new wxPlotLegend(this, m_PlotData);
+	return drawLegend;
 }
 
 wxPolarPlot* MyFrame::CreatePolarPlot()
