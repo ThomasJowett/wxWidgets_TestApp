@@ -2,6 +2,7 @@
 
 #include "wx/window.h"
 #include "PolarPlotData.h"
+#include "wxPolarPlot.h"
 
 
 #define wxTestDialogStyle (wxOK | wxCANCEL | wxCENTRE | wxWS_EX_VALIDATE_RECURSIVELY)		// wxDEFAULT_DIALOG_STYLE
@@ -26,6 +27,7 @@ public:
 
 private:
 	wxPolarPlot*	m_drawPanel;
+	wxPlotStyle* m_PlotStyle;
 
     // any class wishing to process wxWidgets events must use this macro
     DECLARE_EVENT_TABLE()};

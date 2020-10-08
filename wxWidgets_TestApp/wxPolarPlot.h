@@ -6,27 +6,24 @@ class PolarPlotData;
 //class wxPaintDC;
 
 // ----------------------------------------------------------------------------
+struct wxPlotStyle
+{
+	wxColour TitleColour = *wxBLACK;
+	wxColour CaptionsColour = *wxBLACK;
+	wxColour BackgroundColour = *wxWHITE;
+	wxColour GridLineColour = *wxLIGHT_GREY;
+	wxPenStyle GridLineStyle = wxPENSTYLE_SOLID;
+	int GridLineWidth = 1;
+	wxPenStyle PlotLineStyle = wxPENSTYLE_SOLID;
+	int PlotLineWidth = 2;
+};
+// ----------------------------------------------------------------------------
 class wxPolarPlot : public wxPanel
 {
-	struct wxPlotStyle
-	{
-		wxColour TitleColour = *wxBLACK;
-		wxColour LabelsColour = *wxBLACK;
-		wxColour BackgroundColour = *wxWHITE;
-		wxColour GridLineColour = *wxLIGHT_GREY;
-		wxPenStyle GridLineStyle = wxPENSTYLE_SOLID;
-		int GridLineWidth = 1;
-		wxColour BorderColour = *wxLIGHT_GREY;
-		int BorderWidth = 1;
-		wxPenStyle BorderStyle = wxPENSTYLE_SOLID;
-		wxPenStyle PlotLineStyle = wxPENSTYLE_SOLID;
-		int PlotLineWidth = 2;
-	};
 public:
-
-
 	wxPolarPlot(wxWindow* parent,
 		PolarPlotData* graphData,
+		wxPlotStyle* plotStyle = new wxPlotStyle(),
 		bool useTitle = true,
 		bool useLegend = true,
 		bool isLinear = false,
@@ -43,7 +40,7 @@ public:
 	void OnEraseBackground(wxEraseEvent& event) {}
 	void OnSize(wxSizeEvent& event) { Refresh(); }
 
-	wxPlotStyle& Style() { return m_PlotStyle; }
+	wxPlotStyle* Style() { return m_PlotStyle; }
 
 	void ShowTitle(bool showTitle) { m_useTitle = showTitle; }
 	void ShowLegend(bool showLegend) { m_useLegend = showLegend; }
@@ -58,15 +55,12 @@ private:
 
 	void DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int width, int height);
 
-	void DrawLinearGridLegend(wxDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarGridLegend(wxDC* dc, int borderX, int borderY, int width, int height);
-
 	PolarPlotData	  * m_graphData;
 	bool				m_IsLinear;
 	bool					m_useTitle;
 	bool					m_useLegend;
 
-	wxPlotStyle m_PlotStyle;
+	wxPlotStyle* m_PlotStyle;
 
 	int m_VerticalGridLines = 12;
 	int m_HorizontalGridLines = 10;
@@ -77,8 +71,9 @@ class wxPlotLegend : public wxPanel
 {
 public:
 
-	wxPlotLegend(wxWindow *parent,
-		PolarPlotData * graphData,
+	wxPlotLegend(wxWindow* parent,
+		PolarPlotData* graphData,
+		wxPlotStyle* plotStyle = new wxPlotStyle(),
 		wxWindowID winid = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
@@ -88,10 +83,9 @@ public:
 	~wxPlotLegend(void);
 
 	void OnPaint(wxPaintEvent &event);
+	void OnSize(wxSizeEvent& event) { Refresh(); }
 
 private:
-
-	PolarPlotData	  * m_graphData;
-
-	DECLARE_EVENT_TABLE()
+	PolarPlotData	  * m_GraphData;
+	wxPlotStyle* m_PlotStyle;
 };

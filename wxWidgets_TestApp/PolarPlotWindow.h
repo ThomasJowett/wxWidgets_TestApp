@@ -20,6 +20,8 @@
 #define ID_LINEAR_BUTTON		13
 #define ID_LINEARLEGEND_BUTTON	14
 
+#include "wxPolarPlot.h"
+
 // ----------------------------------------------------------------------------
 class PolarPlotWindow : public wxDialog
 {
@@ -38,6 +40,8 @@ private:
 	wxButton* mPolarLegendExport;
 	wxButton* mLinearExport;
 	wxButton* mLinearLegendExport;
+
+	wxPlotStyle* m_PlotStyle;
 
 	// any class wishing to process wxWidgets events must use this macro
 	DECLARE_EVENT_TABLE()

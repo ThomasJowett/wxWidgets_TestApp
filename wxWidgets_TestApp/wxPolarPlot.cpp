@@ -21,6 +21,7 @@
 // ----------------------------------------------------------------------------
 wxPolarPlot::wxPolarPlot(wxWindow* parent,
 	PolarPlotData* graphData,
+	wxPlotStyle* plotStyle,
 	bool useTitle,
 	bool useLegend,
 	bool isLinear,
@@ -31,6 +32,7 @@ wxPolarPlot::wxPolarPlot(wxWindow* parent,
 	const wxString& name)
 	: wxPanel(parent, id, pos, size, style, name),
 	m_graphData(graphData),
+	m_PlotStyle(plotStyle),
 	m_useTitle(useTitle),
 	m_useLegend(useLegend),
 	m_IsLinear(isLinear)
@@ -59,23 +61,13 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 
 	dc.Clear();
 
-	// -----------------------------------------------------------------
-	// Step 1. Drawing the client area border
-	//
-	wxPen* borderPen = wxThePenList->FindOrCreatePen(m_PlotStyle.BorderColour, m_PlotStyle.BorderWidth, m_PlotStyle.BorderStyle);
-	dc.SetPen(*borderPen);
-
 	int positionX = 10;
 	int positionY = 10;
 	int width = sz.x - positionX - positionX;
 	int height = sz.y - positionY - positionY;
 
-	wxRect borderRect(positionX, positionY, width, height);
-	//dc.DrawRectangle(borderRect);
 	// -----------------------------------------------------------------
-
-	// -----------------------------------------------------------------
-	// Step 2. Drawing the grid area 
+	// Step 1. Drawing the grid area 
 	//
 	int dx1 = width / 10;
 	int dy1 = height / 10;
@@ -99,10 +91,9 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 		DrawLinearGridWithCaptions(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
 	else
 		DrawPolarGridLines(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
-	// -----------------------------------------------------------------
 
 	// -----------------------------------------------------------------
-	// Step 3. Drawing the Plots 
+	// Step 2. Drawing the Plots 
 	//
 	if (m_IsLinear)
 		DrawLinearPlots(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
@@ -113,18 +104,12 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 		DrawPolarGridCaptions(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
 
 	// -----------------------------------------------------------------
-	// Step 4. Drawing the Grid Legend 
-	//
-	if (m_useLegend)
-		DrawLinearGridLegend(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
-
-	// -----------------------------------------------------------------
-	// Step 5. Drawing the title
+	// Step 3. Drawing the title
 	//
 	if (m_useTitle)
 	{
 		wxFont font = wxFont(14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxT("Arial"));
-		dc.SetTextForeground(m_PlotStyle.TitleColour);
+		dc.SetTextForeground(m_PlotStyle->TitleColour);
 		dc.SetFont(font);
 		dc.DrawText(m_graphData->Title(), positionX * 3, positionY * 2);
 	}
@@ -133,7 +118,9 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 // ----------------------------------------------------------------------------
 void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY, int width, int height)
 {
-	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle.GridLineColour, m_PlotStyle.GridLineWidth, m_PlotStyle.GridLineStyle);
+	wxBrush* gridBrush = wxTheBrushList->FindOrCreateBrush(m_PlotStyle->BackgroundColour, wxBRUSHSTYLE_SOLID);
+	dc->SetBrush(*gridBrush);
+	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
 	int dx = width / (m_VerticalGridLines);
@@ -144,7 +131,7 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 	dc->DrawRectangle(borderRect);
 
 	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
-	dc->SetTextForeground(m_PlotStyle.LabelsColour);
+	dc->SetTextForeground(m_PlotStyle->CaptionsColour);
 	dc->SetFont(font);
 
 	//int dx = width / (m_graphData->m_VerticalCount + 1);
@@ -169,7 +156,7 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 
 		dc->DrawLine(xStart, yStart, xEnd, yEnd);
 
-		capTxt = wxString::Format(wxT("%2.1f"), -180 + (360.0 / (double)(m_VerticalGridLines)) * ((double)i));
+		capTxt = wxString::Format(wxT("%2.0f"), -180 + (360.0 / (double)(m_VerticalGridLines)) * ((double)i));
 		dc->DrawText(capTxt, xStart, yEnd);
 	}
 
@@ -178,7 +165,7 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 
 	dy = height / (m_HorizontalGridLines);
 
-	capTxt = wxString::Format(wxT("%2.2f"), 0.0);
+	capTxt = wxString::Format(wxT("%2.1f"), 0.0);
 	dc->DrawText(capTxt, borderX - dx / 2, borderY + height - 8);
 
 	for (int i = 1; i < m_HorizontalGridLines; i++)
@@ -193,16 +180,18 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 
 		dc->DrawLine(xStart, yStart, xEnd, yEnd);
 
-		capTxt = wxString::Format(wxT("%2.2f"), (double)i / 10.0);
+		capTxt = wxString::Format(wxT("%2.1f"), (double)i / 10.0);
 		dc->DrawText(capTxt, xStart - dx / 2, yStart - 8);
 	}
-	capTxt = wxString::Format(wxT("%2.2f"), 1.0);
+	capTxt = wxString::Format(wxT("%2.1f"), 1.0);
 	dc->DrawText(capTxt, xFinal - dx / 2, borderY - 8);
 }
 // ----------------------------------------------------------------------------
 void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int width, int height)
 {
-	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle.GridLineColour, m_PlotStyle.GridLineWidth, m_PlotStyle.GridLineStyle);
+	wxBrush* gridBrush = wxTheBrushList->FindOrCreateBrush(m_PlotStyle->BackgroundColour, wxBRUSHSTYLE_SOLID);
+	dc->SetBrush(*gridBrush);
+	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
 	//wxRect borderRect(borderX, borderY, width, height);
@@ -212,13 +201,13 @@ void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int wid
 	int centerPointX = borderX + width / 2.0;
 	int centerPointY = borderY + height / 2.0;
 
-	int dx = height / 2.0 / (m_HorizontalGridLines);
+	int dx = min(height, width) / 2.0 / (m_HorizontalGridLines);
 
 	// Draw concentric circles
 	int radius = 0;
 	for (int i = 0; i < (m_HorizontalGridLines); i++)
 	{
-		radius = height / 2.0 - i * dx;
+		radius = min(height, width) / 2.0 - i * dx;
 		dc->DrawCircle(centerPointX, centerPointY, radius);
 	}
 
@@ -226,10 +215,10 @@ void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int wid
 	int yStart = centerPointY;
 
 	// Draw radius lines
-	radius = height / 2.0;
-	for (int i = 0; i <= 2 * (m_VerticalGridLines); i++)
+	radius = min(height, width) / 2.0;
+	for (int i = 0; i <= (m_VerticalGridLines); i++)
 	{
-		double angle = 0.0 + i * M_PI / (m_VerticalGridLines);
+		double angle = 0.0 + i * M_PI / (m_VerticalGridLines/2.0f);
 
 		int xEnd = centerPointX + radius * cos(angle);
 		int yEnd = centerPointY - radius * sin(angle);
@@ -240,7 +229,7 @@ void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int wid
 // ----------------------------------------------------------------------------
 void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width, int height)
 {
-	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle.GridLineColour, m_PlotStyle.GridLineWidth, m_PlotStyle.GridLineStyle);
+	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
 	double xMin = -180.0;
@@ -266,7 +255,7 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 		int xEnd = xPrevious;
 		int yEnd = yPrevious;
 
-		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
+		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle->PlotLineWidth, m_PlotStyle->PlotLineStyle);
 		dc->SetPen(*plotPen);
 
 		wxPoint point;
@@ -284,7 +273,7 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 
 			points[i] = point;
 
-			dc->DrawCircle(point, m_PlotStyle.PlotLineWidth * 1.5f);
+			dc->DrawCircle(point, m_PlotStyle->PlotLineWidth * 1.5f);
 
 			i++;
 		}
@@ -295,13 +284,13 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 		dc->DrawLines(plot.PlotValues.size() + 1, points);
 		//dc->DrawSpline(plot.PlotValues.size() + 1, points);
 
-		dc->DrawCircle(points[0], m_PlotStyle.PlotLineWidth * 1.5f);
+		dc->DrawCircle(points[0], m_PlotStyle->PlotLineWidth * 1.5f);
 	}
 }
 // ----------------------------------------------------------------------------
 void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, int height)
 {
-	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle.GridLineColour, m_PlotStyle.GridLineWidth, m_PlotStyle.GridLineStyle);
+	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
 	double xMin = -180.0;
@@ -325,7 +314,7 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 
 		dc->SetBrush(*plot.Brush);
 
-		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
+		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle->PlotLineWidth, m_PlotStyle->PlotLineStyle);
 		dc->SetPen(*plotPen);
 
 		wxPoint point;
@@ -340,12 +329,12 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 			double ro = plotValue.second;
 
 			double angle = (0.0 + azimuth) + (M_PI / 2);
-			radius = height / 2.0 * ro;
+			radius = min(height, width) / 2.0 * ro;
 
 			point.x = centerPointX + radius * cos(angle);
 			point.y = centerPointY - radius * sin(angle);
 
-			dc->DrawCircle(point, m_PlotStyle.PlotLineWidth * 1.5f);
+			dc->DrawCircle(point, m_PlotStyle->PlotLineWidth * 1.5f);
 
 			points[i] = point;
 			dc->DrawPoint(point);
@@ -365,33 +354,36 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 void wxPolarPlot::DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int width, int height)
 {
 	wxFont font(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
-	dc->SetTextForeground(m_PlotStyle.LabelsColour);
+	dc->SetTextForeground(m_PlotStyle->CaptionsColour);
 	dc->SetFont(font);
 
 	wxString capTxt;
-	int dx = height / 2.0 / (m_HorizontalGridLines);
+	int dx = min(height, width) / 2.0 / (m_HorizontalGridLines);
 	int centerPointX = borderX + width / 2.0;
 	int centerPointY = borderY + height / 2.0;
 
 	capTxt = wxString::Format(wxT("%d"), 0);
-	dc->DrawText(capTxt, centerPointX - 5, borderY - 20);
+	int radius = min(height, width) / 2.0;
 
-	int radius = height / 2.0;
-	for (int i = 1; i < 2 * m_VerticalGridLines; i++)
+	dc->DrawText(capTxt, centerPointX - 5, centerPointY - (radius + 15));
+	for (int i = 1; i < m_VerticalGridLines; i++)
 	{
-		double angle = 0.0 + i * (M_PI * 2.0) / (2 * m_VerticalGridLines) + (M_PI / 2);
+		double angle = 0.0 + i * (M_PI * 2.0) / (m_VerticalGridLines) + (M_PI / 2);
 
 		int xEnd = centerPointX + radius * cos(angle);
 		int yEnd = centerPointY - radius * sin(angle);
 
-		double degree = i * 360.0 / (2 * m_VerticalGridLines);
+		double degree = i * 360.0 / (m_VerticalGridLines);
+
+		if (degree > 180)
+			degree -= 360;
 
 		capTxt = wxString::Format(wxT("%2.0f"), degree);
-		if (degree <= 90.0)
+		if (degree <= 90.0 && degree >= 0.0)
 			dc->DrawText(capTxt, xEnd - 20, yEnd - 10);
-		else if (degree < 180.0)
+		else if (degree <= 180.0 && degree >= 0.0)
 			dc->DrawText(capTxt, xEnd - 20, yEnd + 5);
-		else if (degree <= 270.0)
+		else if (degree <= -90)
 			dc->DrawText(capTxt, xEnd + 4, yEnd);
 		else
 			dc->DrawText(capTxt, xEnd + 5, yEnd - 10);
@@ -400,169 +392,28 @@ void wxPolarPlot::DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int 
 	radius = 0;
 	for (int i = 1; i < m_HorizontalGridLines; i++)
 	{
-		radius = height / 2.0 - i * dx;
+		radius = min(height, width) / 2.0 - i * dx;
 
 		capTxt = wxString::Format(wxT("%2.1f"), 1.0 - ((double)i) / 10.0);
 		dc->DrawText(capTxt, centerPointX + 2 + radius, centerPointY - 12);
 	}
 }
-// ----------------------------------------------------------------------------
-void wxPolarPlot::DrawLinearGridLegend(wxDC* dc, int borderX, int borderY, int width, int height)
-{
-	const int ZoneNumberThreshold = 5;
-	const int legendRectWidth = 20;
-	const int legendRectShift = 10;
-	const int legentYShift = 50;
-	const int legentY2ndShift = 30;
 
-	int legendRectHalfWidth = legendRectWidth / 2;
-
-	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
-	dc->SetFont(font);
-
-	int graphVisibleCount = m_graphData->NumberOfPlots();
-	int xLegend = 0;
-	int yLegend = 0;
-	int delta = 0;
-
-
-	xLegend = borderX;
-	yLegend = borderY + height + legentYShift;
-
-	if (graphVisibleCount < ZoneNumberThreshold)
-		delta = width / graphVisibleCount;
-	else
-		delta = width / ZoneNumberThreshold;
-
-
-	int graphCount = 1;
-	for (Plot plot : m_graphData->PlotData())
-	{
-		dc->SetBrush(*plot.Brush);
-
-		wxString nameTxt = wxString::Format(wxT("%s"), plot.Name);
-
-		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
-		dc->SetPen(*plotPen);
-
-
-		if ((graphVisibleCount > ZoneNumberThreshold) && (graphCount > ZoneNumberThreshold))
-		{
-			delta = width / ZoneNumberThreshold;
-			xLegend = borderX + (graphCount - ZoneNumberThreshold - 1) * delta;
-			yLegend = borderY + height + legentYShift + legentY2ndShift;
-
-			dc->DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - legendRectHalfWidth);
-
-			//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
-			//dc->DrawRectangle( borderRect );
-
-			dc->DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
-		}
-		else
-		{
-			yLegend = borderY + height + legentYShift + legentY2ndShift;
-			dc->DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - legendRectHalfWidth);
-
-			//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
-			//dc->DrawRectangle( borderRect );
-
-			dc->DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
-
-			xLegend += delta;
-		}
-
-		graphCount++;
-	}
-}
-// ----------------------------------------------------------------------------
-void wxPolarPlot::DrawPolarGridLegend(wxDC* dc, int borderX, int borderY, int width, int height)
-{
-	const int ZoneNumberThreshold = 5;
-	const int legendRectWidth = 20;
-	const int legendRectShift = 10;
-	const int legentYShift = 50;
-	const int legentY2ndShift = 30;
-
-	int legendRectHalfWidth = legendRectWidth / 2;
-
-	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
-	dc->SetFont(font);
-
-	int graphVisibleCount = m_graphData->NumberOfPlots();
-	int xLegend = 0;
-	int yLegend = 0;
-	int delta = 0;
-
-
-	xLegend = borderX;
-	yLegend = borderY + height + legentYShift;
-
-	if (graphVisibleCount < ZoneNumberThreshold)
-		delta = width / graphVisibleCount;
-	else
-		delta = width / ZoneNumberThreshold;
-
-
-	int graphCount = 1;
-	for (Plot plot : m_graphData->PlotData())
-	{
-		dc->SetBrush(*plot.Brush);
-
-		wxString nameTxt = wxString::Format(wxT("%s"), plot.Name);
-
-		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle.PlotLineWidth, m_PlotStyle.PlotLineStyle);
-		dc->SetPen(*plotPen);
-
-
-		if ((graphVisibleCount > ZoneNumberThreshold) && (graphCount > ZoneNumberThreshold))
-		{
-			delta = width / ZoneNumberThreshold;
-			xLegend = borderX + (graphCount - ZoneNumberThreshold - 1) * delta;
-			yLegend = borderY + height + legentYShift + legentY2ndShift;
-
-			dc->DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - legendRectHalfWidth);
-
-			//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
-			//dc->DrawRectangle( borderRect );
-
-			dc->DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
-		}
-		else
-		{
-			dc->DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - legendRectHalfWidth);
-
-			//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
-			//dc->DrawRectangle( borderRect );
-
-			dc->DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
-
-			xLegend += delta;
-		}
-
-
-		graphCount++;
-	}
-}
-// ----------------------------------------------------------------------------
-
-//DRAW LEGEND -----------------------------------------------------------------
-
-BEGIN_EVENT_TABLE(wxPlotLegend, wxPanel)
-EVT_PAINT(wxPlotLegend::OnPaint)
-END_EVENT_TABLE()
-
+//PLOT LEGEND ------------------------------------------------------------------------------------------------------------------------
 wxPlotLegend::wxPlotLegend(wxWindow* parent,
 	PolarPlotData* graphData,
+	wxPlotStyle* plotStyle,
 	wxWindowID id,
 	const wxPoint& pos,
 	const wxSize& size,
 	long style,
 	const wxString& name)
 	: wxPanel(parent, id, pos, size, style, name),
-	m_graphData(graphData)
+	m_GraphData(graphData),
+	m_PlotStyle(plotStyle)
 {
-	SetBackgroundColour(*wxWHITE);
+	Bind(wxEVT_PAINT, &wxPlotLegend::OnPaint, this);
+	Bind(wxEVT_SIZE, &wxPlotLegend::OnSize, this);
 }
 
 wxPlotLegend::~wxPlotLegend(void)
@@ -571,15 +422,16 @@ wxPlotLegend::~wxPlotLegend(void)
 
 void wxPlotLegend::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
-	if (m_graphData->NumberOfPlots() == 0)
+	if (m_GraphData->NumberOfPlots() == 0)
 		return;
 
-	wxPaintDC dc(this);
+	wxBufferedPaintDC dc(this);
 	PrepareDC(dc);			// DoPrepareDC(dc); - This sets the device context’s deviceorigin
 							// Alternatively, you can override the OnDraw virtual function;
 							// wxWindow creates a paint device context and calls DoPrepareDC for you before calling your OnDraw function
-
-	wxSize sz = GetClientSize();		// 800, 600
+	wxGCDC gdc(dc);
+	dc.Clear();
+	wxSize sz = GetClientSize();
 
 	auto width = sz.x;
 	auto height = sz.y;
@@ -593,35 +445,32 @@ void wxPlotLegend::OnPaint(wxPaintEvent& WXUNUSED(event))
 	int legendRectHalfWidth = legendRectWidth / 2;
 
 	wxFont font(9, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
-	dc.SetFont(font);
+	gdc.SetFont(font);
 
-	int graphVisibleCount = m_graphData->NumberOfPlots();
+	int graphVisibleCount = m_GraphData->NumberOfPlots();
 
 	int xLegend = 20;
 	int yLegend = 10;
 	int delta = height / graphVisibleCount;
 
-
 	int graphCount = 1;
-	for (Plot plot : m_graphData->PlotData())
+	for (Plot plot : m_GraphData->PlotData())
 	{
-		dc.SetBrush(*plot.Brush);
+		gdc.SetBrush(*plot.Brush);
 
 		wxString nameTxt = wxString::Format(wxT("%s"), plot.Name);
 
-		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), 2);
-		dc.SetPen(*plotPen);
+		wxPen* plotPen = wxThePenList->FindOrCreatePen(plot.Brush->GetColour(), m_PlotStyle->PlotLineWidth, m_PlotStyle->PlotLineStyle);
+		gdc.SetPen(*plotPen);
 
-		dc.DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - 6);
+		gdc.DrawText(nameTxt, xLegend + legendRectWidth + legendRectShift, yLegend - 6);
 
-		//wxRect borderRect( xLegend, yLegend, legendRectWidth, legendRectWidth);
-		//dc->DrawRectangle( borderRect );
+		gdc.DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
 
-		dc.DrawLine(xLegend - legendRectHalfWidth, yLegend, xLegend + legendRectHalfWidth, yLegend);
+		gdc.DrawCircle(xLegend, yLegend, m_PlotStyle->PlotLineWidth * 1.5f);
 
 		yLegend += delta;
 
 		graphCount++;
 	}
-
 }

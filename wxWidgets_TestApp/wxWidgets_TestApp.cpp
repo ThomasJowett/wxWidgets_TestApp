@@ -35,8 +35,9 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 		generator.AddRandomPlotline(m_PlotData, 36);
 	}
 
-	wxMenuBar *menuBar = new wxMenuBar;
+	m_PlotStyle = new wxPlotStyle();
 
+	wxMenuBar *menuBar = new wxMenuBar;
 
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
@@ -372,7 +373,7 @@ void MyFrame::OnCreatePolarPlot(wxCommandEvent& event)
 }
 void MyFrame::OnCreatePolarPlotWindow(wxCommandEvent& event)
 {
-	wxSize minSize = wxSize(1080, 910);
+	wxSize minSize = wxSize(1800, 910);
 	auto* window = new PolarPlotWindow(this, wxID_ANY, "Polar Plot Window", wxDefaultPosition, minSize, wxDEFAULT_FRAME_STYLE);
 
 	window->SetMinSize(minSize);
@@ -486,19 +487,19 @@ wxSizeReportCtrl * MyFrame::CreateSizeReportCtrl(int width, int height)
 
 wxPolarPlot* MyFrame::CreateLinearPlot()
 {
-	wxPolarPlot* drawPanel = new wxPolarPlot(this, m_PlotData, true, true, true);
+	wxPolarPlot* drawPanel = new wxPolarPlot(this, m_PlotData, m_PlotStyle, true, true, true);
 	return drawPanel;
 }
 
 wxPlotLegend* MyFrame::CreatePolarPlotLegend()
 {
-	wxPlotLegend* drawLegend = new wxPlotLegend(this, m_PlotData);
+	wxPlotLegend* drawLegend = new wxPlotLegend(this, m_PlotData, m_PlotStyle);
 	return drawLegend;
 }
 
 wxPolarPlot* MyFrame::CreatePolarPlot()
 {
-	wxPolarPlot* drawPanel = new wxPolarPlot(this, m_PlotData, true, true, false);
+	wxPolarPlot* drawPanel = new wxPolarPlot(this, m_PlotData, m_PlotStyle, true, true, false);
 	return drawPanel;
 }
 

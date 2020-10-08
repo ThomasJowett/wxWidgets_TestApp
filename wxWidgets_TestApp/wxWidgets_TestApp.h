@@ -125,4 +125,5 @@ private:
 	PolarPlotViewDialog* m_PolarPlot;
 
 	PolarPlotData* m_PlotData;
+	wxPlotStyle* m_PlotStyle;
 };

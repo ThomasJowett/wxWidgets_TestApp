@@ -11,8 +11,8 @@
 #endif
 
 #include "PolarPlotWindow.h"
-#include "wxPolarPlot.h"
 #include "PolarPlotData.h"
+#include "PlotGeneratorHelper.h"
 
 // ----------------------------------------------------------------------------
 // event tables and other macros for wxWidgets
@@ -44,30 +44,26 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	wxStaticBox* polarPlotStaticBox = new wxStaticBox(setupPanel, wxID_ANY, _("Polar Plot"));
 	polarPlotSizer->Add(polarPlotStaticBox, 1, wxGROW | wxALL, 5);
 
-	PolarPlotData * polarGraphData = new PolarPlotData("Polar Plots: 1 - 10");
+	//TEMP CODE ----------------------------------------------------------------------------------------
+	//TODO: make data a member and load in the data
+	PolarPlotData * graphData = new PolarPlotData("Polar Plots: 1 - 10");
 
-	//polarGraphData->m_StartXpercent = 12;
-	//polarGraphData->m_StartYpercent = 5;
-	//polarGraphData->m_isPortrate = true;
-	//polarGraphData->m_EndXpercent = 6;
-	//polarGraphData->m_EndYpercent = 1;
+	PlotGeneratorHelper generator;
+	for (int i = 0; i < 5; ++i)
+	{
+		generator.AddRandomPlotline(graphData, 36);
+	}
+	//--------------------------------------------------------------------------------------------------
+	m_PlotStyle = new wxPlotStyle();
 
-	wxPolarPlot* drawPolarPanel = new wxPolarPlot(polarPlotStaticBox, polarGraphData, false, false, false,
+	wxPolarPlot* drawPolarPanel = new wxPolarPlot(polarPlotStaticBox, graphData, m_PlotStyle, false, false, false,
 		wxID_ANY, wxPoint(18.5, 20), wxSize(550, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Linear Plot
 	wxStaticBox* linearPlotStaticBox = new wxStaticBox(setupPanel, wxID_ANY, _("Linear Plot"));
 	polarPlotSizer->Add(linearPlotStaticBox, 2, wxGROW | wxALL, 5);
 
-	PolarPlotData * linearGraphData = new PolarPlotData("Linear Plots: 1 - 10");
-
-	//linearGraphData->m_StartXpercent = 5;
-	//linearGraphData->m_StartYpercent = 3;
-	//linearGraphData->m_isPortrate = true;
-	//linearGraphData->m_EndXpercent = 0;
-	//linearGraphData->m_EndYpercent = 3;
-
-	wxPolarPlot* drawCartesianPanel = new wxPolarPlot(linearPlotStaticBox, linearGraphData, false, false, true, wxID_ANY,
+	wxPolarPlot* drawCartesianPanel = new wxPolarPlot(linearPlotStaticBox, graphData, m_PlotStyle, false, false, true, wxID_ANY,
 		wxPoint(25, 20), wxSize(1120, 490), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 
 	//Controls Sizer
@@ -216,7 +212,7 @@ PolarPlotWindow::PolarPlotWindow(wxWindow * parent, wxWindowID id, const wxStrin
 	wxStaticBoxSizer* legendStaticBoxSizer = new wxStaticBoxSizer(legendStaticBox, wxHORIZONTAL);
 	legendImagesSizer->Add(legendStaticBoxSizer, 0, wxGROW | wxALL, 5);
 
-	wxPlotLegend* drawLegend = new wxPlotLegend(legendStaticBox, polarGraphData, wxID_ANY, wxPoint(50,50), wxSize(600,250), wxTAB_TRAVERSAL | wxNO_BORDER, title);
+	wxPlotLegend* drawLegend = new wxPlotLegend(legendStaticBox, graphData, m_PlotStyle, wxID_ANY, wxPoint(50,50), wxSize(600,250), wxTAB_TRAVERSAL | wxNO_BORDER, title);
 	legendStaticBoxSizer->Add(drawLegend, 0, wxALL | wxEXPAND, 10);
 
 	//Image Export
