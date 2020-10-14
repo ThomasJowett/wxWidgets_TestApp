@@ -42,6 +42,7 @@ class MyFrame : public wxFrame
 		ID_CreateText,
 		ID_CreateHTML,
 		ID_CreateSizeReport,
+		ID_CreateNotebook,
 		ID_GridContent,
 		ID_TextContent,
 		ID_TreeContent,
@@ -77,15 +78,17 @@ public:
 	void DoUpdate();
 
 private:
-	wxTextCtrl* CreateTextCtrl();
-	wxGrid* CreateGrid();
-	wxTreeCtrl* CreateTreeCtrl();
-	wxSizeReportCtrl* CreateSizeReportCtrl(int width = 80, int height = 80);
-	wxPolarPlot* CreatePolarPlot();
-	wxPolarPlot* CreateLinearPlot();
-	wxPlotLegend* CreatePolarPlotLegend();
+	wxTextCtrl* CreateTextCtrl(wxWindow* parent);
+	wxGrid* CreateGrid(wxWindow* parent);
+	wxTreeCtrl* CreateTreeCtrl(wxWindow* parent);
+	wxSizeReportCtrl* CreateSizeReportCtrl(wxWindow* parent, int width = 80, int height = 80);
+	wxNotebook* CreateNoteBook(wxWindow* parent);
+	wxPolarPlot* CreatePolarPlot(wxWindow* parent);
+	wxPolarPlot* CreateLinearPlot(wxWindow* parent);
+	wxPlotLegend* CreatePolarPlotLegend(wxWindow* parent);
+	wxHtmlWindow* CreateHTMLCtrl(wxWindow* parent);
+
 	wxPoint GetStartPosition();
-	wxHtmlWindow* CreateHTMLCtrl();
 
 	wxString GetIntroText();
 
@@ -101,6 +104,7 @@ private:
 	void OnCreateHTML(wxCommandEvent& event);
 	void OnCreateText(wxCommandEvent& event);
 	void OnCreateSizeReport(wxCommandEvent& event);
+	void OnCreateNotebook(wxCommandEvent& event);
 	void OnChangeContentPane(wxCommandEvent& event);
 	void OnCreatePerspective(wxCommandEvent& event);
 	void OnCopyPerspectiveCode(wxCommandEvent& event);
