@@ -39,6 +39,7 @@ class MyFrame : public wxFrame
 		ID_CreateLinearPlot,
 		ID_CreatePolarPlotLegend,
 		ID_CreatePolarPlotWindow,
+		ID_CreatePolarPlotDASWindow,
 		ID_CreateText,
 		ID_CreateHTML,
 		ID_CreateSizeReport,
@@ -101,6 +102,7 @@ private:
 	void OnCreateLinearPlot(wxCommandEvent& event);
 	void OnCreatePolarPlotLegend(wxCommandEvent& event);
 	void OnCreatePolarPlotWindow(wxCommandEvent& event);
+	void OnCreatePolarPlotDASWindow(wxCommandEvent& event);
 	void OnCreateHTML(wxCommandEvent& event);
 	void OnCreateText(wxCommandEvent& event);
 	void OnCreateSizeReport(wxCommandEvent& event);

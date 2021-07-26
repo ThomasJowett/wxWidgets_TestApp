@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "wxWidgets_TestApp.h"
 #include "PolarPlotWindow.h"
+#include "PolarPlotDAS.h"
 #include "PolarPlotData.h"
 #include "PlotGeneratorHelper.h"
 #include <wx/clipbrd.h>
@@ -10,12 +11,13 @@
 wxIMPLEMENT_APP(MyApp);
 bool MyApp::OnInit()
 {
-	MyFrame *frame = new MyFrame(NULL, wxID_ANY, wxT("wxAUI Test Application"), wxDefaultPosition, wxSize(800, 600));
+	MyFrame* frame = new MyFrame(NULL, wxID_ANY, wxT("wxAUI Test Application"), wxDefaultPosition, wxSize(800, 600));
 	SetTopWindow(frame);
 	frame->Show(true);
+
 	return true;
 }
-MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const wxPoint & pos, const wxSize & size, long style)
+MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
 	: wxFrame(parent, id, title, pos, size, style)
 {
 	// tell the frame manager to manage this frame
@@ -37,15 +39,15 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 
 	m_PlotStyle = new wxPlotStyle();
 
-	wxMenuBar *menuBar = new wxMenuBar;
+	wxMenuBar* menuBar = new wxMenuBar;
 
-	wxMenu *menuFile = new wxMenu;
+	wxMenu* menuFile = new wxMenu;
 	menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
 		"Help string shown in status bar for this menu item");
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);
 
-	wxMenu *view_menu = new wxMenu;
+	wxMenu* view_menu = new wxMenu;
 	view_menu->Append(ID_CreateText, _("Create Text Control"));
 	view_menu->Append(ID_CreateHTML, _("Create HTML Control"));
 	view_menu->Append(ID_CreateTree, _("Create Tree"));
@@ -56,6 +58,7 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	view_menu->Append(ID_CreateLinearPlot, _("Create Linear Plot"));
 	view_menu->Append(ID_CreatePolarPlotLegend, _("Create Polar Plot Legend"));
 	view_menu->Append(ID_CreatePolarPlotWindow, _("Create Polar Plot Window"));
+	view_menu->Append(ID_CreatePolarPlotDASWindow, _("Create Polar Plot DAS Window"));
 	view_menu->AppendSeparator();
 	view_menu->Append(ID_GridContent, _("Use a Grid for the Content Pane"));
 	view_menu->Append(ID_TextContent, _("Use a Text Control for the context pane"));
@@ -83,9 +86,9 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	m_perspectives_menu->Append(ID_FirstPerspective + 0, _("Default Startup"));
 	m_perspectives_menu->Append(ID_FirstPerspective + 1, _("All Panes"));
 
-	wxMenu *menuHelp = new wxMenu;
+	wxMenu* menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
-	
+
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(view_menu, "&View");
 	menuBar->Append(options_menu, "&Options");
@@ -165,13 +168,13 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 
 	m_mgr.AddPane(CreateTreeCtrl(this), wxAuiPaneInfo().Name(wxT("tree_content")).
 		CenterPane().Hide());
-	
+
 	m_mgr.AddPane(CreateSizeReportCtrl(this), wxAuiPaneInfo().Name(wxT("sizereport_content")).
 		CenterPane().Hide());
-	
+
 	m_mgr.AddPane(CreateTextCtrl(this), wxAuiPaneInfo().Name(wxT("text_content")).
 		CenterPane().Hide());
-	
+
 	m_mgr.AddPane(CreateHTMLCtrl(this), wxAuiPaneInfo().Name(wxT("html_content")).
 		CenterPane());
 
@@ -223,6 +226,7 @@ MyFrame::MyFrame(wxWindow * parent, wxWindowID id, const wxString & title, const
 	Bind(wxEVT_MENU, &MyFrame::OnCreateLinearPlot, this, ID_CreateLinearPlot);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotLegend, this, ID_CreatePolarPlotLegend);
 	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotWindow, this, ID_CreatePolarPlotWindow);
+	Bind(wxEVT_MENU, &MyFrame::OnCreatePolarPlotDASWindow, this, ID_CreatePolarPlotDASWindow);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateHTML, this, ID_CreateHTML);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateSizeReport, this, ID_CreateSizeReport);
 	Bind(wxEVT_MENU, &MyFrame::OnCreateNotebook, this, ID_CreateNotebook);
@@ -257,7 +261,7 @@ MyFrame::~MyFrame()
 {
 	m_mgr.UnInit();
 }
-wxAuiDockArt * MyFrame::GetDockArt()
+wxAuiDockArt* MyFrame::GetDockArt()
 {
 	return m_mgr.GetArtProvider();
 }
@@ -265,7 +269,7 @@ void MyFrame::DoUpdate()
 {
 	m_mgr.Update();
 }
-wxTextCtrl * MyFrame::CreateTextCtrl(wxWindow* parent)
+wxTextCtrl* MyFrame::CreateTextCtrl(wxWindow* parent)
 {
 	wxString text;
 	static int n = 0;
@@ -276,7 +280,7 @@ wxTextCtrl * MyFrame::CreateTextCtrl(wxWindow* parent)
 		wxPoint(0, 0), wxSize(150, 90),
 		wxNO_BORDER | wxTE_MULTILINE);
 }
-wxGrid * MyFrame::CreateGrid(wxWindow* parent)
+wxGrid* MyFrame::CreateGrid(wxWindow* parent)
 {
 	wxGrid* grid = new wxGrid(parent, -1,
 		wxPoint(0, 0),
@@ -285,7 +289,7 @@ wxGrid * MyFrame::CreateGrid(wxWindow* parent)
 	grid->CreateGrid(50, 20);
 	return grid;
 }
-wxTreeCtrl * MyFrame::CreateTreeCtrl(wxWindow* parent)
+wxTreeCtrl* MyFrame::CreateTreeCtrl(wxWindow* parent)
 {
 	wxTreeCtrl* tree = new wxTreeCtrl(parent, -1,
 		wxPoint(0, 0), wxSize(160, 250),
@@ -325,15 +329,15 @@ wxTreeCtrl * MyFrame::CreateTreeCtrl(wxWindow* parent)
 }
 
 
-void MyFrame::OnEraseBackground(wxEraseEvent & event)
+void MyFrame::OnEraseBackground(wxEraseEvent& event)
 {
 	event.Skip();
 }
-void MyFrame::OnSize(wxSizeEvent & event)
+void MyFrame::OnSize(wxSizeEvent& event)
 {
 	event.Skip();
 }
-void MyFrame::OnCreateTree(wxCommandEvent & event)
+void MyFrame::OnCreateTree(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateTreeCtrl(this), wxAuiPaneInfo().
 		Name(wxT("Test")).Caption(wxT("Tree Control")).
@@ -341,7 +345,7 @@ void MyFrame::OnCreateTree(wxCommandEvent & event)
 		FloatingSize(wxSize(150, 300)));
 	m_mgr.Update();
 }
-void MyFrame::OnCreateGrid(wxCommandEvent & event)
+void MyFrame::OnCreateGrid(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateGrid(this), wxAuiPaneInfo().
 		Name(wxT("Test")).Caption(wxT("Grid")).
@@ -382,7 +386,30 @@ void MyFrame::OnCreatePolarPlotWindow(wxCommandEvent& event)
 
 	window->ShowModal();
 }
-void MyFrame::OnCreateHTML(wxCommandEvent & event)
+void MyFrame::OnCreatePolarPlotDASWindow(wxCommandEvent& event)
+{
+	wxSize minSize = wxSize(600, 800);
+	std::vector<PolarPlotData> multiPlotData;
+
+	for (size_t i = 0; i < 20; i++)
+	{
+		PolarPlotData* graphData = new PolarPlotData(std::to_string(i * 10), "Azimuth", "Proportion of Shotlines");
+
+		PlotGeneratorHelper generator(i);
+		for (int i = 0; i < 5; ++i)
+		{
+			generator.AddRandomPlotline(graphData, 36);
+		}
+
+		multiPlotData.push_back(*graphData);
+	}
+	PolarPlotDAS* window = new PolarPlotDAS(this, wxID_ANY, "Polar Plot Window", multiPlotData, wxDefaultPosition, minSize, wxDEFAULT_FRAME_STYLE);
+
+	window->SetMinSize(minSize);
+
+	window->ShowModal();
+}
+void MyFrame::OnCreateHTML(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateHTMLCtrl(this), wxAuiPaneInfo().
 		Name(wxT("Test")).Caption(wxT("Grid")).
@@ -390,7 +417,7 @@ void MyFrame::OnCreateHTML(wxCommandEvent & event)
 		FloatingSize(wxSize(300, 200)));
 	m_mgr.Update();
 }
-void MyFrame::OnCreateText(wxCommandEvent & event)
+void MyFrame::OnCreateText(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateTextCtrl(this), wxAuiPaneInfo().
 		Name(wxT("Test")).Caption(wxT("Text Control")).
@@ -411,7 +438,7 @@ void MyFrame::OnHello(wxCommandEvent& event)
 	wxLogMessage("Hello world from wxWidgets!");
 }
 
-void MyFrame::OnSettings(wxCommandEvent & event)
+void MyFrame::OnSettings(wxCommandEvent& event)
 {
 	// show the settings pane, and float it
 	wxAuiPaneInfo& floating_pane = m_mgr.GetPane(wxT("settings")).Float().Show();
@@ -424,7 +451,7 @@ void MyFrame::OnSettings(wxCommandEvent & event)
 	m_mgr.Update();
 }
 
-void MyFrame::OnGradient(wxCommandEvent & event)
+void MyFrame::OnGradient(wxCommandEvent& event)
 {
 	int gradient = 0;
 
@@ -440,7 +467,7 @@ void MyFrame::OnGradient(wxCommandEvent & event)
 	m_mgr.Update();
 }
 
-void MyFrame::OnManagerFlag(wxCommandEvent & event)
+void MyFrame::OnManagerFlag(wxCommandEvent& event)
 {
 	unsigned int flag = 0;
 
@@ -466,7 +493,7 @@ void MyFrame::OnManagerFlag(wxCommandEvent & event)
 	m_mgr.Update();
 }
 
-void MyFrame::OnUpdateUI(wxUpdateUIEvent & event)
+void MyFrame::OnUpdateUI(wxUpdateUIEvent& event)
 {
 	unsigned int flags = m_mgr.GetFlags();
 
@@ -479,7 +506,7 @@ void MyFrame::OnUpdateUI(wxUpdateUIEvent & event)
 	}
 }
 
-wxSizeReportCtrl * MyFrame::CreateSizeReportCtrl(wxWindow* parent, int width, int height)
+wxSizeReportCtrl* MyFrame::CreateSizeReportCtrl(wxWindow* parent, int width, int height)
 {
 	wxSizeReportCtrl* ctrl = new wxSizeReportCtrl(parent, -1,
 		wxDefaultPosition,
@@ -527,7 +554,7 @@ wxPoint MyFrame::GetStartPosition()
 	return wxPoint(pt.x + x, pt.y + x);
 }
 
-wxHtmlWindow * MyFrame::CreateHTMLCtrl(wxWindow* parent)
+wxHtmlWindow* MyFrame::CreateHTMLCtrl(wxWindow* parent)
 {
 	wxHtmlWindow* ctrl = new wxHtmlWindow(parent, -1,
 		wxDefaultPosition,
@@ -584,7 +611,7 @@ wxString MyFrame::GetIntroText()
 	return wxString::FromAscii(text);
 }
 
-void MyFrame::OnCreateSizeReport(wxCommandEvent & event)
+void MyFrame::OnCreateSizeReport(wxCommandEvent& event)
 {
 	m_mgr.AddPane(CreateSizeReportCtrl(this), wxAuiPaneInfo()
 		.Name(wxT("Test")).Caption(wxT("Client Size Reporter"))
@@ -600,7 +627,7 @@ void MyFrame::OnCreateNotebook(wxCommandEvent& event)
 	m_mgr.Update();
 }
 
-void MyFrame::OnChangeContentPane(wxCommandEvent & event)
+void MyFrame::OnChangeContentPane(wxCommandEvent& event)
 {
 	m_mgr.GetPane(wxT("grid_content")).Show(event.GetId() == ID_GridContent ? true : false);
 	m_mgr.GetPane(wxT("text_content")).Show(event.GetId() == ID_TextContent ? true : false);
@@ -610,7 +637,7 @@ void MyFrame::OnChangeContentPane(wxCommandEvent & event)
 	m_mgr.Update();
 }
 
-void MyFrame::OnCreatePerspective(wxCommandEvent & event)
+void MyFrame::OnCreatePerspective(wxCommandEvent& event)
 {
 	wxTextEntryDialog dlg(this, wxT("Enter a name for the new perspective:"),
 		wxT("wxAUI Test"));
@@ -628,7 +655,7 @@ void MyFrame::OnCreatePerspective(wxCommandEvent & event)
 	m_perspectives.Add(m_mgr.SavePerspective());
 }
 
-void MyFrame::OnCopyPerspectiveCode(wxCommandEvent & event)
+void MyFrame::OnCopyPerspectiveCode(wxCommandEvent& event)
 {
 	wxString s = m_mgr.SavePerspective();
 
@@ -639,7 +666,7 @@ void MyFrame::OnCopyPerspectiveCode(wxCommandEvent & event)
 	}
 }
 
-void MyFrame::OnRestorePerspective(wxCommandEvent & event)
+void MyFrame::OnRestorePerspective(wxCommandEvent& event)
 {
 	m_mgr.LoadPerspective(m_perspectives.Item(event.GetId() - ID_FirstPerspective));
 }

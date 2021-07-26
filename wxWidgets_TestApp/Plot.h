@@ -17,6 +17,7 @@ struct Plot
 	std::string Name;
 	wxBrush * Brush = nullptr;
 	std::vector<std::pair<double, double>> PlotValues;
+	bool IsVisible;
 
 	std::vector<std::pair<double, double>>::const_iterator begin() const { return PlotValues.begin(); }
 	std::vector<std::pair<double, double>>::const_iterator end() const { return PlotValues.end(); }

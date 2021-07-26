@@ -31,7 +31,7 @@ wxPolarPlot::wxPolarPlot(wxWindow* parent,
 	long style,
 	const wxString& name)
 	: wxPanel(parent, id, pos, size, style, name),
-	m_graphData(graphData),
+	m_GraphData(graphData),
 	m_PlotStyle(plotStyle),
 	m_useTitle(useTitle),
 	m_useLegend(useLegend),
@@ -50,10 +50,8 @@ wxPolarPlot::~wxPolarPlot(void)
 void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxBufferedPaintDC dc(this);
-	//PrepareDC(dc);			// DoPrepareDC(dc); - This sets the device context’s deviceorigin
+
 	wxGCDC gdc(dc);
-	// Alternatively, you can override the OnDraw virtual function;
-	// wxWindow creates a paint device context and calls DoPrepareDC for you before calling your OnDraw function
 
 	dc.SetBackgroundMode(wxTRANSPARENT);
 
@@ -61,49 +59,32 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 
 	dc.Clear();
 
-	int positionX = 10;
-	int positionY = 10;
-	int width = sz.x - positionX - positionX;
-	int height = sz.y - positionY - positionY;
+	int margin = 10;
+	int width = sz.x - margin - margin;
+	int height = sz.y - margin - margin;
 
 	// -----------------------------------------------------------------
 	// Step 1. Drawing the grid area 
-	//
-	int dx1 = width / 10;
-	int dy1 = height / 10;
+	// Step 2. Drawing the Plots
 
-	int dx2 = width / 20;
-	int dy2 = height / 20;
-
-	int gridBorderX = dx1;
-	int gridBorderY = dy1;
-
-	int gridWidth0 = width - dx1 - dx2;
-	int gridHeight0 = height - dy1 - dy2;
-
-	int dx = gridWidth0 / (m_VerticalGridLines);
-	int dy = gridHeight0 / (m_HorizontalGridLines);
-
-	int gridWidth = (m_VerticalGridLines)*dx;
-	int gridHeight = (m_HorizontalGridLines)*dy;
 
 	if (m_IsLinear)
-		DrawLinearGridWithCaptions(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
+	{
+		int linearGridBorderX = 60;
+		int linearGridBorderY = 20;
+		wxRect linearGridRect = wxRect(linearGridBorderX, linearGridBorderY, width - linearGridBorderX, height - linearGridBorderY - 20);
+		DrawLinearGridWithCaptions(&gdc, linearGridRect);
+		DrawLinearPlots(&gdc, linearGridRect);
+	}
 	else
-		DrawPolarGridLines(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
+	{
+		int polarGridBorder = 20;
+		wxRect polarGridRect = wxRect(polarGridBorder, polarGridBorder, width - polarGridBorder, height - polarGridBorder);
+		DrawPolarGridLines(&gdc, polarGridRect);
+		DrawPolarPlots(&gdc, polarGridRect);
+		DrawPolarGridCaptions(&gdc, polarGridRect);
+	}
 
-	// -----------------------------------------------------------------
-	// Step 2. Drawing the Plots 
-	//
-	if (m_IsLinear)
-		DrawLinearPlots(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
-	else
-		DrawPolarPlots(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
-
-	if (!m_IsLinear)
-		DrawPolarGridCaptions(&gdc, gridBorderX, gridBorderY, gridWidth, gridHeight);
-
-	// -----------------------------------------------------------------
 	// Step 3. Drawing the title
 	//
 	if (m_useTitle)
@@ -111,45 +92,41 @@ void wxPolarPlot::OnPaint(wxPaintEvent& WXUNUSED(event))
 		wxFont font = wxFont(14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxT("Arial"));
 		dc.SetTextForeground(m_PlotStyle->TitleColour);
 		dc.SetFont(font);
-		dc.DrawText(m_graphData->Title(), positionX * 3, positionY * 2);
+		dc.DrawText(m_GraphData->Title(), margin * 3, margin * 2);
 	}
 	// -----------------------------------------------------------------
 }
 // ----------------------------------------------------------------------------
-void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY, int width, int height)
+void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, wxRect gridArea)
 {
 	wxBrush* gridBrush = wxTheBrushList->FindOrCreateBrush(m_PlotStyle->BackgroundColour, wxBRUSHSTYLE_SOLID);
 	dc->SetBrush(*gridBrush);
 	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
-	int dx = width / (m_VerticalGridLines);
-	int dy = height / (m_HorizontalGridLines);
+	int dx = gridArea.width / (m_VerticalGridLines);
+	int dy = gridArea.height / (m_HorizontalGridLines);
 
-	//wxRect borderRect(borderX, borderY, width, height);
-	wxRect borderRect(borderX, borderY, width, height);
-	dc->DrawRectangle(borderRect);
+	dc->DrawRectangle(gridArea);
 
 	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
 	dc->SetTextForeground(m_PlotStyle->CaptionsColour);
 	dc->SetFont(font);
-
-	//int dx = width / (m_graphData->m_VerticalCount + 1);
 
 	int xFinal = 0;
 	int yFinal = 0;
 	wxString capTxt;
 
 	capTxt = wxString::Format(wxT("%d"), -180);
-	dc->DrawText(capTxt, borderX, borderY + height);
+	dc->DrawText(capTxt, gridArea.GetLeft() - 8, gridArea.GetBottom());
 
 	for (int i = 1; i < m_VerticalGridLines; i++)
 	{
 		// Draw a vertical line
-		int xStart = borderX + i * dx;
-		int yStart = borderY;
+		int xStart = gridArea.GetLeft() + i * dx;
+		int yStart = gridArea.GetTop();
 		int xEnd = xStart;
-		int yEnd = borderY + height;
+		int yEnd = gridArea.GetBottom();
 
 		xFinal = xStart;
 		yFinal = yEnd;
@@ -157,23 +134,23 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 		dc->DrawLine(xStart, yStart, xEnd, yEnd);
 
 		capTxt = wxString::Format(wxT("%2.0f"), -180 + (360.0 / (double)(m_VerticalGridLines)) * ((double)i));
-		dc->DrawText(capTxt, xStart, yEnd);
+		dc->DrawText(capTxt, xStart - 8, yEnd);
 	}
 
 	capTxt = wxString::Format(wxT("%d"), 180);
-	dc->DrawText(capTxt, borderX + width, yFinal);
+	dc->DrawText(capTxt, gridArea.GetRight() - 8, yFinal);
 
-	dy = height / (m_HorizontalGridLines);
+	dy = gridArea.height / (m_HorizontalGridLines);
 
 	capTxt = wxString::Format(wxT("%2.1f"), 0.0);
-	dc->DrawText(capTxt, borderX - dx / 2, borderY + height - 8);
+	dc->DrawText(capTxt, gridArea.GetLeft() - 24, gridArea.GetBottom() - 8);
 
 	for (int i = 1; i < m_HorizontalGridLines; i++)
 	{
 		// Draw a horizontal line
-		int xStart = borderX;
-		int yStart = borderY + height - i * dy;
-		int xEnd = borderX + width;
+		int xStart = gridArea.GetLeft();
+		int yStart = gridArea.GetBottom() - i * dy;
+		int xEnd = gridArea.GetRight();
 		int yEnd = yStart;
 
 		xFinal = xStart;
@@ -181,33 +158,32 @@ void wxPolarPlot::DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY,
 		dc->DrawLine(xStart, yStart, xEnd, yEnd);
 
 		capTxt = wxString::Format(wxT("%2.1f"), (double)i / 10.0);
-		dc->DrawText(capTxt, xStart - dx / 2, yStart - 8);
+		dc->DrawText(capTxt, gridArea.GetLeft() - 24, yStart - 8);
 	}
 	capTxt = wxString::Format(wxT("%2.1f"), 1.0);
-	dc->DrawText(capTxt, xFinal - dx / 2, borderY - 8);
+	dc->DrawText(capTxt, gridArea.GetLeft() - 24, gridArea.GetTop() - 8);
+
+	dc->DrawText(m_GraphData->XAxisLabel(), gridArea.width / 2 + 40, gridArea.GetBottom() + 15);
+	dc->DrawRotatedText(m_GraphData->YAxisLabel(), gridArea.GetLeft() - 44, gridArea.height, 90);
 }
 // ----------------------------------------------------------------------------
-void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int width, int height)
+void wxPolarPlot::DrawPolarGridLines(wxDC* dc, wxRect gridArea)
 {
 	wxBrush* gridBrush = wxTheBrushList->FindOrCreateBrush(m_PlotStyle->BackgroundColour, wxBRUSHSTYLE_SOLID);
 	dc->SetBrush(*gridBrush);
 	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
 
-	//wxRect borderRect(borderX, borderY, width, height);
-	wxRect borderRect(borderX, borderY, width, height);
-	//dc->DrawRectangle(borderRect);
+	int centerPointX = gridArea.GetLeft() + gridArea.width / 2.0;
+	int centerPointY = gridArea.GetTop() + gridArea.height / 2.0;
 
-	int centerPointX = borderX + width / 2.0;
-	int centerPointY = borderY + height / 2.0;
-
-	int dx = min(height, width) / 2.0 / (m_HorizontalGridLines);
+	int dx = min(gridArea.height, gridArea.width) / 2.0 / (m_HorizontalGridLines);
 
 	// Draw concentric circles
 	int radius = 0;
 	for (int i = 0; i < (m_HorizontalGridLines); i++)
 	{
-		radius = min(height, width) / 2.0 - i * dx;
+		radius = (double)min(gridArea.height, gridArea.width) / 2.0 - i * dx;
 		dc->DrawCircle(centerPointX, centerPointY, radius);
 	}
 
@@ -215,10 +191,10 @@ void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int wid
 	int yStart = centerPointY;
 
 	// Draw radius lines
-	radius = min(height, width) / 2.0;
+	radius = min(gridArea.height, gridArea.width) / 2.0;
 	for (int i = 0; i <= (m_VerticalGridLines); i++)
 	{
-		double angle = 0.0 + i * M_PI / (m_VerticalGridLines/2.0f);
+		double angle = 0.0 + i * M_PI / (m_VerticalGridLines / 2.0f);
 
 		int xEnd = centerPointX + radius * cos(angle);
 		int yEnd = centerPointY - radius * sin(angle);
@@ -227,7 +203,7 @@ void wxPolarPlot::DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int wid
 	}
 }
 // ----------------------------------------------------------------------------
-void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width, int height)
+void wxPolarPlot::DrawLinearPlots(wxDC* dc, wxRect gridArea)
 {
 	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
@@ -238,20 +214,23 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 	double yMin = 0.0;
 	double yMax = 1.0;
 
-	int dx = width / m_VerticalGridLines;
-	int dy = height / m_HorizontalGridLines;
+	int dx = gridArea.width / m_VerticalGridLines;
+	int dy = gridArea.height / m_HorizontalGridLines;
 
-	double xScale = (xMax - xMin) / width;
-	double yScale = (yMax - yMin) / height;
+	double xScale = (xMax - xMin) / gridArea.width;
+	double yScale = (yMax - yMin) / gridArea.height;
 
-	int plotsInTotal = m_graphData->NumberOfPlots();
+	int plotsInTotal = m_GraphData->NumberOfPlots();
 
-	for (auto plot : m_graphData->PlotData())
+	for (auto plot : m_GraphData->PlotData())
 	{
+		if (!plot.IsVisible)
+			continue;
+
 		dc->SetBrush(*plot.Brush);
 
-		int xPrevious = borderX;
-		int yPrevious = borderY + height;
+		int xPrevious = gridArea.GetLeft();
+		int yPrevious = gridArea.GetBottom();
 		int xEnd = xPrevious;
 		int yEnd = yPrevious;
 
@@ -260,16 +239,16 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 
 		wxPoint point;
 
-		wxPoint* points = new wxPoint[plot.PlotValues.size() + 1];
+		wxPoint* points = new wxPoint[plot.PlotValues.size() + 2];
 
-		int i = 1;
+		size_t i = 1;
 		for (std::pair<double, double> plotValue : plot.PlotValues)
 		{
 			double currentX = plotValue.first;
 			double currentY = plotValue.second;
 
-			point.x = borderX + (currentX + xMax) / xScale;
-			point.y = borderY + (yMax - currentY) / yScale;
+			point.x = gridArea.GetLeft() + (currentX + xMax) / xScale;
+			point.y = gridArea.GetTop() + (yMax - currentY) / yScale;
 
 			points[i] = point;
 
@@ -278,17 +257,26 @@ void wxPolarPlot::DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width,
 			i++;
 		}
 
-		//Draw a point at the start that is -360 from the end
-		points[0] = wxPoint(points[i - 1].x - (xMax - xMin) / xScale, points[i - 1].y);
+		double lastToEnd = xMax - plot.PlotValues.back().first;
+		double minToFirst = plot.PlotValues.front().first - xMin;
+		double alpha = lastToEnd / (minToFirst + lastToEnd);
 
-		dc->DrawLines(plot.PlotValues.size() + 1, points);
+		double endYValue = (plot.PlotValues.front().second * alpha) + (plot.PlotValues.back().second * (1 - alpha));
+
+		points[0] = wxPoint(gridArea.GetLeft(), gridArea.GetTop() + (yMax - endYValue) / yScale);
+		points[i] = wxPoint(gridArea.GetLeft() + (xMax * 2) / xScale, gridArea.GetTop() + (yMax - endYValue) / yScale);
+
+		dc->DrawLines(plot.PlotValues.size() + 2, points);
 		//dc->DrawSpline(plot.PlotValues.size() + 1, points);
 
-		dc->DrawCircle(points[0], m_PlotStyle->PlotLineWidth * 1.5f);
+		if (plot.PlotValues.back().first > 179.0)
+			dc->DrawCircle(points[0], m_PlotStyle->PlotLineWidth * 1.5f);
+		if (plot.PlotValues.front().first < -179)
+			dc->DrawCircle(points[i], m_PlotStyle->PlotLineWidth * 1.5f);
 	}
 }
 // ----------------------------------------------------------------------------
-void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, int height)
+void wxPolarPlot::DrawPolarPlots(wxDC* dc, wxRect gridArea)
 {
 	wxPen* gridPen = wxThePenList->FindOrCreatePen(m_PlotStyle->GridLineColour, m_PlotStyle->GridLineWidth, m_PlotStyle->GridLineStyle);
 	dc->SetPen(*gridPen);
@@ -299,18 +287,21 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 	double yMin = 0.0;
 	double yMax = 1.0;
 
-	int dx = width / (m_VerticalGridLines);
-	int dy = height / (m_HorizontalGridLines);
+	int dx = gridArea.width / (m_VerticalGridLines);
+	int dy = gridArea.height / (m_HorizontalGridLines);
 
-	double xScale = (xMax - xMin) / width;
-	double yScale = (yMax - yMin) / height;
+	double xScale = (xMax - xMin) / gridArea.width;
+	double yScale = (yMax - yMin) / gridArea.height;
 
-	int plotsInTotal = m_graphData->NumberOfPlots();
+	int plotsInTotal = m_GraphData->NumberOfPlots();
 
-	for (auto plot : m_graphData->PlotData())
+	for (auto plot : m_GraphData->PlotData())
 	{
-		int centerPointX = borderX + width / 2.0;
-		int centerPointY = borderY + height / 2.0;
+		if (!plot.IsVisible)
+			continue;
+
+		int centerPointX = gridArea.GetLeft() + gridArea.width / 2.0;
+		int centerPointY = gridArea.GetTop() + gridArea.height / 2.0;
 
 		dc->SetBrush(*plot.Brush);
 
@@ -329,7 +320,7 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 			double ro = plotValue.second;
 
 			double angle = (0.0 + azimuth) + (M_PI / 2);
-			radius = min(height, width) / 2.0 * ro;
+			radius = min(gridArea.height, gridArea.width) / 2.0 * ro;
 
 			point.x = centerPointX + radius * cos(angle);
 			point.y = centerPointY - radius * sin(angle);
@@ -351,24 +342,24 @@ void wxPolarPlot::DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, 
 	}
 }
 // ----------------------------------------------------------------------------
-void wxPolarPlot::DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int width, int height)
+void wxPolarPlot::DrawPolarGridCaptions(wxDC* dc, wxRect gridArea)
 {
 	wxFont font(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
 	dc->SetTextForeground(m_PlotStyle->CaptionsColour);
 	dc->SetFont(font);
 
 	wxString capTxt;
-	int dx = min(height, width) / 2.0 / (m_HorizontalGridLines);
-	int centerPointX = borderX + width / 2.0;
-	int centerPointY = borderY + height / 2.0;
+	int dx = min(gridArea.height, gridArea.width) / 2.0 / (m_HorizontalGridLines);
+	int centerPointX = gridArea.GetLeft() + gridArea.width / 2.0;
+	int centerPointY = gridArea.GetTop() + gridArea.height / 2.0;
 
 	capTxt = wxString::Format(wxT("%d"), 0);
-	int radius = min(height, width) / 2.0;
+	int radius = min(gridArea.height, gridArea.width) / 2.0;
 
 	dc->DrawText(capTxt, centerPointX - 5, centerPointY - (radius + 15));
 	for (int i = 1; i < m_VerticalGridLines; i++)
 	{
-		double angle = 0.0 + i * (M_PI * 2.0) / (m_VerticalGridLines) + (M_PI / 2);
+		double angle = 0.0 + i * (M_PI * 2.0) / (m_VerticalGridLines)+(M_PI / 2);
 
 		int xEnd = centerPointX + radius * cos(angle);
 		int yEnd = centerPointY - radius * sin(angle);
@@ -392,10 +383,15 @@ void wxPolarPlot::DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int 
 	radius = 0;
 	for (int i = 1; i < m_HorizontalGridLines; i++)
 	{
-		radius = min(height, width) / 2.0 - i * dx;
+		radius = min(gridArea.height, gridArea.width) / 2.0 - i * dx;
+
+		double angle = wxDegToRad(32);
+
+		int xEnd = centerPointX + radius * cos(angle);
+		int yEnd = centerPointY - radius * sin(angle);
 
 		capTxt = wxString::Format(wxT("%2.1f"), 1.0 - ((double)i) / 10.0);
-		dc->DrawText(capTxt, centerPointX + 2 + radius, centerPointY - 12);
+		dc->DrawText(capTxt, xEnd - 3, yEnd - 15);
 	}
 }
 
@@ -408,10 +404,12 @@ wxPlotLegend::wxPlotLegend(wxWindow* parent,
 	const wxSize& size,
 	long style,
 	const wxString& name)
-	: wxPanel(parent, id, pos, size, style, name),
+	: wxScrolledWindow(parent, id),
 	m_GraphData(graphData),
 	m_PlotStyle(plotStyle)
 {
+	wxSize parentSize = parent->GetSize();
+	SetScrollbars(1, 1, 0, m_GraphData->NumberOfPlots() * 16, 0, 0);
 	Bind(wxEVT_PAINT, &wxPlotLegend::OnPaint, this);
 	Bind(wxEVT_SIZE, &wxPlotLegend::OnSize, this);
 }
@@ -451,7 +449,7 @@ void wxPlotLegend::OnPaint(wxPaintEvent& WXUNUSED(event))
 
 	int xLegend = 20;
 	int yLegend = 10;
-	int delta = height / graphVisibleCount;
+	int delta = 16;
 
 	int graphCount = 1;
 	for (Plot plot : m_GraphData->PlotData())

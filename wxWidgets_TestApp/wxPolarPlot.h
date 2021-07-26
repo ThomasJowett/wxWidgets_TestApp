@@ -36,7 +36,7 @@ public:
 
 	~wxPolarPlot(void);
 
-	void OnPaint(wxPaintEvent &event);
+	void OnPaint(wxPaintEvent& event);
 	void OnEraseBackground(wxEraseEvent& event) {}
 	void OnSize(wxSizeEvent& event) { Refresh(); }
 
@@ -45,20 +45,22 @@ public:
 	void ShowTitle(bool showTitle) { m_useTitle = showTitle; }
 	void ShowLegend(bool showLegend) { m_useLegend = showLegend; }
 
+	void SetPlotData(PolarPlotData* graphData) { m_GraphData = graphData; Refresh(); }
+
 private:
 
-	void DrawLinearGridWithCaptions(wxDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarGridLines(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawLinearGridWithCaptions(wxDC* dc, wxRect gridArea);
+	void DrawPolarGridLines(wxDC* dc, wxRect gridArea);
 
-	void DrawLinearPlots(wxDC* dc, int borderX, int borderY, int width, int height);
-	void DrawPolarPlots(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawLinearPlots(wxDC* dc, wxRect gridArea);
+	void DrawPolarPlots(wxDC* dc, wxRect gridArea);
 
-	void DrawPolarGridCaptions(wxDC* dc, int borderX, int borderY, int width, int height);
+	void DrawPolarGridCaptions(wxDC* dc, wxRect gridArea);
 
-	PolarPlotData	  * m_graphData;
-	bool				m_IsLinear;
-	bool					m_useTitle;
-	bool					m_useLegend;
+	PolarPlotData* m_GraphData;
+	bool m_IsLinear;
+	bool m_useTitle;
+	bool m_useLegend;
 
 	wxPlotStyle* m_PlotStyle;
 
@@ -67,7 +69,7 @@ private:
 };
 // ----------------------------------------------------------------------------
 
-class wxPlotLegend : public wxPanel
+class wxPlotLegend : public wxScrolledWindow
 {
 public:
 
@@ -82,10 +84,10 @@ public:
 
 	~wxPlotLegend(void);
 
-	void OnPaint(wxPaintEvent &event);
+	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event) { Refresh(); }
 
 private:
-	PolarPlotData	  * m_GraphData;
+	PolarPlotData* m_GraphData;
 	wxPlotStyle* m_PlotStyle;
 };

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PolarPlotDAS.h" />
     <ClInclude Include="PolarPlotData.h" />
     <ClInclude Include="wxPolarPlot.h" />
     <ClInclude Include="Plot.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="wxWidgets_TestApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PolarPlotDAS.cpp" />
     <ClCompile Include="PolarPlotData.cpp" />
     <ClCompile Include="wxPolarPlot.cpp" />
     <ClCompile Include="PlotGeneratorHelper.cpp" />

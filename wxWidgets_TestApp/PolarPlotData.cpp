@@ -6,8 +6,8 @@
 
 
 // ----------------------------------------------------------------------------
-PolarPlotData::PolarPlotData(std::string title)
-	:m_Title(title)
+PolarPlotData::PolarPlotData(std::string title, std::string xAxisLabel, std::string yAxisLabel)
+	:m_Title(title), m_XAxisLabel(xAxisLabel), m_YAxisLabel(yAxisLabel)
 {
 }
 // ----------------------------------------------------------------------------

@@ -51,18 +51,18 @@
     <ClInclude Include="wxPolarPlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PolarPlotDAS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wxWidgets_TestApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SizeReportCtrl.cpp">
+    <ClCompile Include="PlotGeneratorHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlotViewDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolarPlotData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolarPlotViewDialog.cpp">
@@ -71,13 +71,19 @@
     <ClCompile Include="PolarPlotWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlotGeneratorHelper.cpp">
+    <ClCompile Include="SizeReportCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PolarPlotData.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wxPolarPlot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wxWidgets_TestApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolarPlotDAS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

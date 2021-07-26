@@ -3,15 +3,15 @@
 
 #include <ctime>
 
-PlotGeneratorHelper::PlotGeneratorHelper()
+PlotGeneratorHelper::PlotGeneratorHelper(unsigned int seed)
 {
-	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+	std::srand(seed);
 
-	m_Names.push_back("M,BTR80_NATO_AVT-127,BigATGM,Single,1500m,Firer/Target=Static/Moving");
-	m_Names.push_back("F,BTR80_NATO_AVT-127,BigATGM,Single,1500m,Firer/Target=Static/Moving");
-	m_Names.push_back("K,BTR80_NATO_AVT-127,BigATGM,Single,1500m,Firer/Target=Static/Moving");
-	m_Names.push_back("G,BTR80_NATO_AVT-127,BigATGM,Single,1500m,Firer/Target=Static/Moving");
-	m_Names.push_back("P,BTR80_NATO_AVT-127,BigATGM,Single,1500m,Firer/Target=Static/Moving");
+	m_Names.push_back("Example 1");
+	m_Names.push_back("Example 1");
+	m_Names.push_back("Example 1");
+	m_Names.push_back("Example 1");
+	m_Names.push_back("Example 1");
 
 	m_Brushes.push_back(wxTheBrushList->FindOrCreateBrush(wxColour(255, 174, 42)));
 	m_Brushes.push_back(wxTheBrushList->FindOrCreateBrush(*wxGREEN));
@@ -34,6 +34,8 @@ void PlotGeneratorHelper::AddRandomPlotline(PolarPlotData* polarPlotData, int da
 	{
 		tempX.push_back((i * (360.0/(double)datapoints)) - 180);
 	}
+	if (datapoints == 5)
+		tempX = std::vector<double>({ -180,-70, -30, 0, 80 });
 
 	for (int i = 0; i < datapoints; i++)
 	{

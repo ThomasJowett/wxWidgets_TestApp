@@ -5,7 +5,7 @@
 class PlotGeneratorHelper
 {
 public:
-	PlotGeneratorHelper();
+	PlotGeneratorHelper(unsigned int seed = static_cast<unsigned int>(std::time(nullptr)));
 	void AddRandomPlotline(PolarPlotData* polarPlotData, int datapoints);
 private:
 	std::vector<std::string> m_Names;
